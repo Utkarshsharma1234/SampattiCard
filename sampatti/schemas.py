@@ -9,4 +9,8 @@ class Employer(BaseModel):
 class Domestic_Worker(BaseModel):
     name: str
     email : str
-    password:str
+    phoneNumber:int
+
+class Login_Employer(BaseModel):
+    email: str
+    password:str    
