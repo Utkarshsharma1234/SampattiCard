@@ -1,25 +1,7 @@
 from pydantic import BaseModel
-from typing import List, Optional
-
-# class EmployerBase(BaseModel):
-#     id: int
-#     name: str
-
-#     class Config:
-#         orm_mode = True
-
-# class WorkerBase(BaseModel):
-#     name: int
-#     email: str
-
-#     class Config:
-#         orm_mode = True
-
-# class WorkerSchema(WorkerBase):
-#     employers : List[EmployerBase]
-
-# class EmployerSchema(EmployerBase):
-#     workers: List[WorkerBase]
+from fastapi import Body
+from typing import List, Annotated
+from datetime import datetime
 
 class Domestic_Worker(BaseModel):
     name: str
@@ -60,3 +42,9 @@ class ShowDomesticWorker(BaseModel):
 class Login_Employer(BaseModel):
     email: str
     password:str    
+
+class Contract(BaseModel):
+    employer_number: int
+    worker_number : int
+    message : str
+    timestamp : str

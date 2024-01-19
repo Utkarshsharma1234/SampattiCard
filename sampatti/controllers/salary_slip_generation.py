@@ -4,7 +4,7 @@ from reportlab.pdfgen import canvas
 from reportlab.platypus import Table, TableStyle
 from textwrap import wrap
 
-def contract_generation(request) :
+def salary_slip_generation(request) :
     w, h = A3
     c = canvas.Canvas("salary_slip.pdf", pagesize=A3)
 

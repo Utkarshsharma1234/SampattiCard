@@ -37,3 +37,6 @@ def check_existing_worker(phoneNumber, db: Session = Depends(get_db)):
 def login_employer(request : schemas.Login_Employer, db : Session = Depends(get_db)):
     return userControllers.login_employer(request,db)
     
+@router.post("/contract")
+def contract_generation(request : schemas.Contract, db : Session = Depends(get_db)):
+    return userControllers.create_contract(request,db)

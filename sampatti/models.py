@@ -24,3 +24,14 @@ class Employer(Base):
     email = Column(String)
     password = Column(String)
     workers = relationship("Domestic_Worker", secondary="worker_employer",back_populates='employers')
+
+
+class Contract(Base) :
+
+    __tablename__ = "Contracts"
+    id = Column(Integer, primary_key=True, index=True)
+    employer_number = Column(Integer)
+    worker_number = Column(Integer)
+    message = Column(String)
+    timestamp = Column(String)
+    hashedMessage = Column(String)

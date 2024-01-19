@@ -3,6 +3,8 @@ from fastapi import Depends, HTTPException, status
 from ..import schemas, models
 from ..hashing import Hash
 from sqlalchemy.orm import Session, joinedload
+import hashlib
+import json
 
 # creating the employer
 def create_employer(request : schemas.Employer, db: Session):
@@ -71,3 +73,27 @@ def login_employer(request : schemas.Login_Employer, db):
         "Employer_Name" : employer.name,
         "Employer_Email" : employer.email
     }
+
+def create_contract(request : schemas.Contract, db):
+
+    my_object = {
+        "employer_number" : request.employer_number,
+        "worker_number" : request.worker_number,
+        "message" : request.message,
+        "timestamp" : request.timestamp,
+    }
+
+    json_string = json.dumps(my_object, sort_keys=True)
+
+    hash_object = hashlib.sha256()
+
+    hash_object.update(json_string.encode('utf-8'))
+
+    hashed_result = hash_object.hexdigest()
+
+    contract = models.Contract(employer_number = request.employer_number, worker_number = request.worker_number, message = request.message, timestamp = request.timestamp, hashedMessage = hashed_result)
+
+    db.add(contract)
+    db.commit()
+    db.refresh(contract)
+    return contract
