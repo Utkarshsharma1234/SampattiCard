@@ -1,5 +1,4 @@
-import ctypes
-from fastapi import Depends, HTTPException, status
+from fastapi import HTTPException, status
 from ..import schemas, models
 from ..hashing import Hash
 from sqlalchemy.orm import Session, joinedload

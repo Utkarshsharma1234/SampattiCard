@@ -1,7 +1,5 @@
 from pydantic import BaseModel
-from fastapi import Body
-from typing import List, Annotated
-from datetime import datetime
+from typing import List
 
 class Domestic_Worker(BaseModel):
     name: str
