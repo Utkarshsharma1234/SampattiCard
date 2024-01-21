@@ -6,14 +6,15 @@ from datetime import datetime
 class Domestic_Worker(BaseModel):
     name: str
     email : str
-    phoneNumber:int
+    workerNumber:int
+    employerNumber : int
     class Config:
         from_attributes = True
 
 class Employer(BaseModel):
     name: str
     email : str
-    password:str
+    employerNumber:int
     class Config:
         from_attributes = True
 

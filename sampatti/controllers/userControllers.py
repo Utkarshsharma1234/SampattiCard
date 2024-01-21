@@ -8,11 +8,11 @@ import json
 
 # creating the employer
 def create_employer(request : schemas.Employer, db: Session):
-    worker_name = request.name
-    worker_email = request.email
-    worker_password = request.password
+    employer_name = request.name
+    employer_email = request.email
+    employer_number = request.employerNumber
 
-    new_user = models.Employer(name = worker_name, email = worker_email, password = Hash.bcrypt(worker_password))
+    new_user = models.Employer(name = employer_name, email = employer_email, employerNumber = employer_number)
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
@@ -23,29 +23,42 @@ def create_employer(request : schemas.Employer, db: Session):
 def create_domestic_worker(request : schemas.Domestic_Worker, db: Session):
     worker_name = request.name
     worker_email = request.email
-    worker_phoneNumber = request.phoneNumber
+    worker_phoneNumber = request.workerNumber
+    employer_phoneNumber = request.employerNumber
 
-    new_worker = models.Domestic_Worker(name = worker_name, email = worker_email, phoneNumber = worker_phoneNumber)
-    employer = db.query(models.Employer).filter(models.Employer.id == 1).first()
+    existing_worker = db.query(models.Domestic_Worker).filter(models.Domestic_Worker.workerNumber == worker_phoneNumber).first()
+    
+    if not existing_worker:
+        new_worker = models.Domestic_Worker(name = worker_name, email = worker_email, workerNumber = worker_phoneNumber, employerNumber = employer_phoneNumber)
+        employer = db.query(models.Employer).filter(models.Employer.employerNumber == employer_phoneNumber).first()
 
-    new_worker.employers.append(employer)
-    db.add(new_worker)
-    db.commit()
-    db.refresh(new_worker)
-    return new_worker
+        new_worker.employers.append(employer)
+        db.add(new_worker)
+        db.commit()
+        db.refresh(new_worker)
+        return new_worker
+    
+    else:
+        employer = db.query(models.Employer).filter(models.Employer.employerNumber == employer_phoneNumber).first()
+
+        existing_worker.employers.append(employer)
+        db.commit()
+        db.refresh(existing_worker)
+        return existing_worker
+    
    
 
 # getting a employer
-def get_employer(id, db :Session):
-    employer = db.query(models.Employer).options(joinedload(models.Employer.workers)).filter(models.Employer.id == id).first()
+def get_employer(employerNumber, db :Session):
+    employer = db.query(models.Employer).options(joinedload(models.Employer.workers)).filter(models.Employer.employerNumber == employerNumber).first()
     if not employer:
         return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User Not Found!")
     return employer
 
 
 # getting domestic worker
-def get_domestic_worker(id,db:Session):
-    domestic_worker = db.query(models.Domestic_Worker).options(joinedload(models.Domestic_Worker.employers)).filter(models.Domestic_Worker.id == id).first()
+def get_domestic_worker(workerNumber,db:Session):
+    domestic_worker = db.query(models.Domestic_Worker).options(joinedload(models.Domestic_Worker.employers)).filter(models.Domestic_Worker.workerNumber == workerNumber).first()
     if not domestic_worker:
         return HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Domestic Worker not Found.")
     return domestic_worker

@@ -15,13 +15,13 @@ def create_employer(request : schemas.Employer, db : Session = Depends(get_db)):
     return userControllers.create_employer(request, db)
 
 
-@router.get("/employer/{id}", response_model = schemas.Employer_Schema)
-def get_employer(id, db :Session = Depends(get_db)):
-    return userControllers.get_employer(id,db)
+@router.get("/employer/{employerNumber}", response_model = schemas.Employer_Schema)
+def get_employer(employerNumber : int, db :Session = Depends(get_db)):
+    return userControllers.get_employer(employerNumber,db)
 
-@router.get("/domestic_worker/{id}", response_model = schemas.Domestic_Worker_Schema)
-def get_domestic_worker(id,db:Session = Depends(get_db)):
-    return userControllers.get_domestic_worker(id,db)
+@router.get("/domestic_worker/{workerNumber}", response_model = schemas.Domestic_Worker_Schema)
+def get_domestic_worker(workerNumber,db:Session = Depends(get_db)):
+    return userControllers.get_domestic_worker(workerNumber,db)
 
 @router.post('/domestic_worker/create')
 def create_domestic_worker(request : schemas.Domestic_Worker, db: Session = Depends(get_db)):

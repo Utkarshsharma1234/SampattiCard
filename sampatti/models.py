@@ -13,7 +13,8 @@ class Domestic_Worker(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
     email = Column(String)
-    phoneNumber = Column(Integer)
+    workerNumber = Column(Integer)
+    employerNumber = Column(Integer)
     employers = relationship("Employer", secondary="worker_employer", back_populates='workers')
 
 
@@ -22,7 +23,7 @@ class Employer(Base):
     id = Column(Integer, primary_key=True, index=True)
     name = Column(String)
     email = Column(String)
-    password = Column(String)
+    employerNumber = Column(Integer)
     workers = relationship("Domestic_Worker", secondary="worker_employer",back_populates='employers')
 
 
