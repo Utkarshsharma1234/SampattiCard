@@ -5,9 +5,7 @@ from .routers import user
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
-origins = [
-    "https://conv.sampatticards.com",
-]
+origins = ["*"]
 
 app.add_middleware(
     CORSMiddleware,
