@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
 origins = [
-    "http://localhost:3000",
+    "https://conv.sampatticards.com",
 ]
 
 app.add_middleware(
