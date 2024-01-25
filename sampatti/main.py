@@ -1,4 +1,6 @@
+import os
 from fastapi import FastAPI
+from fastapi.staticfiles import StaticFiles
 from . import models
 from .database import engine
 from .routers import user
@@ -14,6 +16,10 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+static_dir = os.path.join(os.getcwd(), 'static')
+
+app.mount("/static", StaticFiles(directory=static_dir), name="static")
 
 models.Base.metadata.create_all(engine)
 

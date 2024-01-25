@@ -1,14 +1,21 @@
+import os
 from reportlab.lib.pagesizes import A3
 from reportlab.lib import colors
 from reportlab.pdfgen import canvas
 from reportlab.platypus import Table, TableStyle
 from textwrap import wrap
 
-def salary_slip_generation(request) :
-    w, h = A3
-    c = canvas.Canvas("salary_slip.pdf", pagesize=A3)
+def generate_salary_slip() :
 
-    c.drawImage("logo.png", w/2-25, h-70, height=50, width=50)
+    static_dir = os.path.join(os.getcwd(), 'static')
+    pdf_path = os.path.join(static_dir, "salary_slip.pdf")
+
+    if not os.path.exists('static'):
+        os.makedirs('static')
+    w, h = A3
+    c = canvas.Canvas(pdf_path, pagesize=A3)
+
+    # c.drawImage("logo.png", w/2-25, h-70, height=50, width=50)
     c.setFont("Helvetica", 30)
 
     c.setFillColorRGB(0.2, 0.1, 0.7)
