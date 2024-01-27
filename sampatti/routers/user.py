@@ -50,8 +50,8 @@ async def execute_cashfree_script():
         "accept": "application/json",
         "content-type": "application/json",
         "x-api-version": "2022-09-01",
-        "x-client-id": "1994686bae5c30d3e4be55a6a9864991",
-        "x-client-secret": "6ed2dd114b39ca3c84dd2429a1b64e55b5904c69",
+        "x-client-id": "",
+        "x-client-secret": "",
         "x-idempotency-key": str(uuid.uuid4()),
         "x-request-id": str(uuid.uuid4()),
     }
