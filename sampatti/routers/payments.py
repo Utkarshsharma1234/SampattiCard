@@ -1,7 +1,19 @@
-import uuid
+from fastapi import APIRouter
+import uuid, os
+from dotenv import load_dotenv
 import httpx
 
+router = APIRouter(
+    prefix="/payments",
+    tags=['payments']
+)
 
+load_dotenv()
+
+client_id = os.getenv("CASHFREE_CILENT_ID")
+secret_key = os.getenv("CASHFREE_CLIENT_SECRET_KEY")
+
+@router.get("/payment_link")
 async def execute_cashfree_script():
     url = "https://sandbox.cashfree.com/pg/links"
 
@@ -9,8 +21,8 @@ async def execute_cashfree_script():
         "accept": "application/json",
         "content-type": "application/json",
         "x-api-version": "2022-09-01",
-        "x-client-id": "1994686bae5c30d3e4be55a6a9864991",
-        "x-client-secret": "6ed2dd114b39ca3c84dd2429a1b64e55b5904c69",
+        "x-client-id": client_id,
+        "x-client-secret": secret_key,
         "x-idempotency-key": str(uuid.uuid4()),
         "x-request-id": str(uuid.uuid4()),
     }
@@ -26,7 +38,7 @@ async def execute_cashfree_script():
             "send_email": True
         },
         "link_id": str(uuid.uuid4()),
-        "link_amount": 1500,
+        "link_amount": 20,
         "link_currency": "INR",
         "link_purpose": "testing worker employment"
     }

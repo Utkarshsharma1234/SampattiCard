@@ -62,34 +62,9 @@ def get_employer(employerNumber, db :Session):
 def get_domestic_worker(workerNumber,db:Session):
     domestic_worker = db.query(models.Domestic_Worker).options(joinedload(models.Domestic_Worker.employers)).filter(models.Domestic_Worker.workerNumber == workerNumber).first()
     if not domestic_worker:
-        # error_message = {"error": "Domestic Worker not found. Please try onboarding the worker."}
-        # return JSONResponse(status_code=200, content=error_message)
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Worker not Found.")
     return domestic_worker
 
-
-# checking for the domestic worker using phone number
-# def check_existing_worker(phoneNumber, db: Session):
-#     user = db.query(models.Domestic_Worker).filter(models.Domestic_Worker.phoneNumber == phoneNumber).first()
-#     if not user:
-#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="The domestic worker is not registered. Please egister the worker.")
-#     else:
-#         return user
-
-
-# logging in the employer
-# def login_employer(request : schemas.Login_Employer, db):
-#     employer = db.query(models.Employer).filter(models.Employer.email == request.email).first()
-#     if not employer:
-#         raise HTTPException(status_code= status.HTTP_404_NOT_FOUND, detail="The employer is not registered.")
-    
-#     if not Hash.verify(employer.password, request.password):
-#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Invalid Password")
-
-#     return {
-#         "Employer_Name" : employer.name,
-#         "Employer_Email" : employer.email
-#     }
 
 def create_contract(request : schemas.Contract, db):
 

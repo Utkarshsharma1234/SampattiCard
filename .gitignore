@@ -3,3 +3,4 @@ sampattiCard
 .DS_Store
 .db
 static
+.env

@@ -1,21 +1,28 @@
 import os
+from fastapi import HTTPException, status
 from reportlab.lib.pagesizes import A3
 from reportlab.lib import colors
 from reportlab.pdfgen import canvas
 from reportlab.platypus import Table, TableStyle
 from textwrap import wrap
+from sqlalchemy.orm import Session
+from .. import models
 
-def generate_salary_slip() :
+def generate_salary_slip(workerNumber, db:Session) :
 
+    worker = db.query(models.Domestic_Worker).filter(models.Domestic_Worker.workerNumber == workerNumber).first()
+
+    if not worker :
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="The domestic worker is not registered. You must register the worker first.")
+    
     static_dir = os.path.join(os.getcwd(), 'static')
-    pdf_path = os.path.join(static_dir, "salary_slip.pdf")
+    pdf_path = os.path.join(static_dir, f"{workerNumber}_salary_slip.pdf")
 
     if not os.path.exists('static'):
         os.makedirs('static')
     w, h = A3
     c = canvas.Canvas(pdf_path, pagesize=A3)
 
-    # c.drawImage("logo.png", w/2-25, h-70, height=50, width=50)
     c.setFont("Helvetica", 30)
 
     c.setFillColorRGB(0.2, 0.1, 0.7)
@@ -55,7 +62,7 @@ def generate_salary_slip() :
     c.line(w/2-48, y, w/2 + 35, y)
 
     c.setFont("Times-Roman", 25)
-    name = "Utkarsh Sharma"
+    name = worker.name
 
     worker_data = [
         [f"Name of the Employee : {name}", "PF Number : NA"],
@@ -89,10 +96,22 @@ def generate_salary_slip() :
     y = y - 50
     c.drawString(x, y, text=issued)
 
-    receipt_data = [
-        ["Sr. No.", "Emp Code", "Mode", "Reference", "Salary", "Variable Pay", "Income Tax", "Prof.Tax", "PF"], 
-        [1,1,"UPI", 221318092006, 4000, 0, 0, 0, 0]
-    ]
+    receipt_data = []
+    receipt_data.append(["Sr. No.", "Emp Code", "Mode", "Reference"])
+    for employer in worker.employers:
+        single_employer = []
+        single_employer.append(employer.id)
+        single_employer.append(employer.name)
+        single_employer.append(employer.email)
+        single_employer.append(employer.employerNumber)
+        receipt_data.append(single_employer)
+    # receipt_data = [
+    #     ["Sr. No.", "Emp Code", "Mode", "Reference", "Salary", "Variable Pay", "Income Tax", "Prof.Tax", "PF"], 
+    #     [1,1,"UPI", 221318092006, 4000, 0, 0, 0, 0],
+    #     [1,1,"UPI", 221318092006, 4000, 0, 0, 0, 0],
+    #     [1,1,"UPI", 221318092006, 4000, 0, 0, 0, 0],
+    #     [1,1,"UPI", 221318092006, 4000, 0, 0, 0, 0]
+    # ]
 
     receipt_style = TableStyle([
         ('TEXTCOLOR', (0, 0), (-1, -1), colors.black),
