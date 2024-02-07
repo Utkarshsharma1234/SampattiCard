@@ -4,6 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from . import models
 from .database import engine
 from .routers import user, payments
+from .routers import audio
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -25,4 +26,5 @@ models.Base.metadata.create_all(engine)
 
 
 app.include_router(user.router)
+app.include_router(audio.router)
 app.include_router(payments.router)
