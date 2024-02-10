@@ -1,10 +1,9 @@
 import os
 from tempfile import NamedTemporaryFile
 import tempfile
-from typing import List
 from fastapi import APIRouter, HTTPException, UploadFile, File
 import whisper
-from fastapi.responses import JSONResponse, RedirectResponse
+from fastapi.responses import JSONResponse
 import torch
 
 torch.cuda.is_available()
@@ -45,4 +44,5 @@ async def transcribe(file: UploadFile = File(...)):
         print(f"Error saving temporary file: {e}")
 
     return JSONResponse(content={"results": results})
+
 
