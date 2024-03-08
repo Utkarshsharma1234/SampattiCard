@@ -49,4 +49,5 @@ async def execute_cashfree_script():
         if response.status_code // 100 != 2:
             return {"error": f"Failed to execute Cashfree script. Status code: {response.status_code}", "response_data": response.text}
 
-    return {"status_code": response.status_code, "response_data": response.json()}
+    # return {"status_code": response.status_code, "response_data": response.json()}
+    return response.json()["link_url"]

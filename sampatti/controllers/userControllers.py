@@ -1,4 +1,5 @@
 from fastapi import HTTPException, status
+from sqlalchemy import update
 from ..import schemas, models
 from ..hashing import Hash
 from sqlalchemy.orm import Session, joinedload
@@ -34,7 +35,7 @@ def create_domestic_worker(request : schemas.Domestic_Worker, db: Session):
     existing_worker = db.query(models.Domestic_Worker).filter(models.Domestic_Worker.workerNumber == worker_phoneNumber).first()
     
     if not existing_worker:
-        new_worker = models.Domestic_Worker(name = worker_name, email = worker_email, workerNumber = worker_phoneNumber, employerNumber = employer_phoneNumber)
+        new_worker = models.Domestic_Worker(name = worker_name, email = worker_email, workerNumber = worker_phoneNumber)
 
         new_worker.employers.append(employer)
         db.add(new_worker)
@@ -89,3 +90,16 @@ def create_contract(request : schemas.Contract, db):
     db.commit()
     db.refresh(contract)
     return contract
+
+def insert_salary(request : schemas.Salary, db : Session):
+
+    workerNumber = request.workerNumber
+    employerNumber = request.employerNumber
+    salary = request.salary_amount
+
+    update_statement = update(models.worker_employer).where(models.worker_employer.c.worker_number == workerNumber).where(models.worker_employer.c.employer_number == employerNumber).values(salary_amount=salary)
+
+    db.execute(update_statement)
+    db.commit()
+
+    return {"salary credited successfully."}

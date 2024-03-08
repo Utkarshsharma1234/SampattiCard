@@ -16,12 +16,23 @@ class Employer(BaseModel):
     class Config:
         from_attributes = True
 
-class Domestic_Worker_Schema(Domestic_Worker):
+class Salary(BaseModel):
+    workerNumber : int
+    employerNumber : int
+    salary_amount : int
+    class Config:
+        from_attributes = True
+
+class Dummy_worker(BaseModel):
+    name: str
+    email : str
+    workerNumber:int
+
+class Domestic_Worker_Schema(Dummy_worker):
     employers : List[Employer] = []
 
 class Employer_Schema(Employer):
-    workers : List[Domestic_Worker] = []
-
+    workers : List[Dummy_worker] = []
 
 class ShowEmployer(BaseModel):
     name:str

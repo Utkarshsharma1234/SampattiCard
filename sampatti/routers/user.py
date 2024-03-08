@@ -38,6 +38,9 @@ def generate_salary_slip_endpoint(workerNumber : int, db: Session = Depends(get_
 
     return FileResponse(static_pdf_path, media_type='application/pdf', filename=f"{workerNumber}_salary_slip.pdf")
 
+@router.post("/salary")
+def insert_salary(request : schemas.Salary, db : Session = Depends(get_db)):
+    return userControllers.insert_salary(request, db)
 
 @router.post("/contract")
 def contract_generation(request : schemas.Contract, db : Session = Depends(get_db)):
