@@ -5,8 +5,10 @@ from reportlab.lib import colors
 from reportlab.pdfgen import canvas
 from reportlab.platypus import Table, TableStyle
 from textwrap import wrap
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 from .. import models
+from .cashfree_api import check_order_status
 
 def generate_salary_slip(workerNumber, db:Session) :
 
@@ -23,43 +25,31 @@ def generate_salary_slip(workerNumber, db:Session) :
     w, h = A3
     c = canvas.Canvas(pdf_path, pagesize=A3)
 
-    c.setFont("Helvetica", 30)
+    c.setFont("Helvetica-Bold", 30)
 
-    c.setFillColorRGB(0.2, 0.1, 0.7)
-    text = "Propublica Finance and Investment"
+    c.setFillColorRGB(0.078, 0.33, 0.45)
+    text = "Propublica Finance and Investment Services Pvt. Ltd."
     size = len(text)
-    c.drawString(w/2 - size*6, h-100, text=text)
-    c.drawString(w/2 - size*3, h-140, text="Services Pvt. Ltd.")
+    c.drawString(w/2 - size*7, h-100, text=text)
 
-    x = 50
-    y = h - 200
+    x = 70
+    y = h - 150
 
-    c.setFont("Helvetica-Bold", 15)
-    c.drawString(x, y, "Address : ")
-    t = c.beginText()
-    t.setFont("Helvetica", 15)
-    t.setTextOrigin(x + 80,y)
-
-    address = "Lorem Ipsum is simply dummy text of the printing and typesetting industry."
-    wrapped_address = "\n".join(wrap(address, 40))
-    t.textLines(wrapped_address)
-    c.drawText(t)
+    c.setFont("Helvetica", 20)
 
     cin = "CIN : 20369785412547852"
-    udyam = "udyam reg. no. : UDYAM-5689-120356"
+    udyam = "Udyam Registration Number : UDYAM-5689-120356"
 
-    c.drawString(w/2 + 60, y, cin)
-    c.drawString(w/2 + 60, y - 20, udyam)
+    c.drawString(w/2 - size*4, y, cin)
+    c.drawString(w/2 - size*4, y - 30, udyam)
 
     y = y - 40
-    c.line(0, y, w, y)
 
-    y = y - 30
+    y = y - 40
     c.setFont("Helvetica-Bold", 20)
-    c.drawString(w/2-45, y, "Pay Slip") 
+    c.drawString(w/2-size*2.5, y, "Salary Record") 
 
     y = y - 8
-    c.line(w/2-48, y, w/2 + 35, y)
 
     c.setFont("Times-Roman", 25)
     name = worker.name
@@ -68,12 +58,11 @@ def generate_salary_slip(workerNumber, db:Session) :
         [f"Name of the Employee : {name}", "PF Number : NA"],
         ["Nature of Work : Domestic Help", "Account Number : 2222222222222222"],
         ["Bank Name : HDFC Bank", "IFSC Code : NA"],
-        ["ESI Number : NA", "UPI ID : NA"],
-        ["UAN Number : NA", "Tax no. : NA"]
+        ["ESI Number : NA", "UPI ID : NA"]
     ]
 
     worker_style = TableStyle([
-        ('TEXTCOLOR', (0, 0), (-1, -1), colors.black),
+        ('TEXTCOLOR', (0, 0), (-1, -1), colors.Color(0.078, 0.33, 0.45)),
         ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
         ('FONTSIZE', (0, 0), (-1, -1), 16),
         ('BOTTOMPADDING', (0, 0), (-1, -1), 15),
@@ -89,7 +78,6 @@ def generate_salary_slip(workerNumber, db:Session) :
     worker_table.drawOn(c,x, y)
 
     c.setFont("Times-Roman", 15)
-    c.setFillColorRGB(0,0,0)
 
     issued = "Salary Slip issued on : 01-01-2024 for the month of January 2024"
 
@@ -97,24 +85,27 @@ def generate_salary_slip(workerNumber, db:Session) :
     c.drawString(x, y, text=issued)
 
     receipt_data = []
-    receipt_data.append(["Sr. No.", "Emp Code", "Mode", "Reference"])
-    for employer in worker.employers:
-        single_employer = []
-        single_employer.append(employer.id)
-        single_employer.append(employer.name)
-        single_employer.append(employer.email)
-        single_employer.append(employer.employerNumber)
-        receipt_data.append(single_employer)
-    # receipt_data = [
-    #     ["Sr. No.", "Emp Code", "Mode", "Reference", "Salary", "Variable Pay", "Income Tax", "Prof.Tax", "PF"], 
-    #     [1,1,"UPI", 221318092006, 4000, 0, 0, 0, 0],
-    #     [1,1,"UPI", 221318092006, 4000, 0, 0, 0, 0],
-    #     [1,1,"UPI", 221318092006, 4000, 0, 0, 0, 0],
-    #     [1,1,"UPI", 221318092006, 4000, 0, 0, 0, 0]
-    # ]
+    receipt_data.append(["Sr. No.", "Employer Code", "Mode", "Reference", "Salary", "Variable Pay"])
 
+    rows = 0
+
+    total_transactions = db.query(models.worker_employer).filter(models.worker_employer.c.worker_number == workerNumber).all()
+    
+    ct = 1
+    for transaction in total_transactions:
+        order_id = transaction.order_id
+        status = check_order_status(order_id=order_id)
+        if status == "PAID":
+            single_row = [ct, transaction.employer_number, "UPI", transaction.worker_number, transaction.salary_amount, "Variable Pay"]
+            receipt_data.append(single_row)
+            ct += 1
+
+        else:
+            continue
+
+        
     receipt_style = TableStyle([
-        ('TEXTCOLOR', (0, 0), (-1, -1), colors.black),
+        ('TEXTCOLOR', (0, 0), (-1, -1), colors.Color(0.078, 0.33, 0.45)),
         ('FONTSIZE', (0, 0), (-1, -1), 14),
         ('BOTTOMPADDING', (0, 0), (-1, -1), 10),
         ('RIGHTPADDING', (0,0), (-1,-1), 10),
@@ -123,15 +114,14 @@ def generate_salary_slip(workerNumber, db:Session) :
     ])
 
 
-    y = y - 200
+    y = y - rows*25 - 70
     receipt_table = Table(receipt_data)
     receipt_table.setStyle(receipt_style)
-    p,q = receipt_table.wrapOn(c, 0, 0)
+    receipt_table.wrapOn(c, 0, 0)
     receipt_table.drawOn(c, x, y)
 
     c.setFont("Helvetica-Bold", 15)
-
-    y = y - 100
+    y = y - 70
     c.drawString(x, y, "Total Salary Credited INR 4000/- Only")
     c.drawString(x, y-30, "Amount in Words : FOUR THOUSAND /- Only")
 
@@ -139,25 +129,21 @@ def generate_salary_slip(workerNumber, db:Session) :
     note = "NOTE : This is a digitally issued salary slip and does not require attestation."
     c.setFont("Helvetica", 15)
 
-    y = y - 150
+    y = y - 100
     c.drawString(x, y, text=note)
     note = "The money has been debited in the corresponding bank account."
     c.drawString(x, y-20, text=note)
 
-    y = y - 100
-    declare = "Declaration : "
-    c.setFont('Helvetica-Bold', 15)
-    c.drawString(x, y, declare)
+    y = y - 70
 
     t = c.beginText()
     t.setFont("Helvetica", 15)
-    t.setTextOrigin(150, y)
+    t.setTextOrigin(x, y)
 
-    declaration = "This transaction trail is verified with a contract between the employer and employee basis which this salary slip has been issued. Sampatti Card is not the employer of the person for which the salary slip is being issued"
-    wrapped_declaration = "\n".join(wrap(declaration, 80))
+    declaration = "Declaration : The transaction trail is verified with an employment agreement between the employer and the employee basis which the salary slip is issued. Propublica Finance and Investment Services Pvt. Ltd. is not the employer for the worker for whom salary record is generated. "
+    wrapped_declaration = "\n".join(wrap(declaration, 90))
     t.textLines(wrapped_declaration)
     c.drawText(t)
-
 
     c.showPage()
     c.save()

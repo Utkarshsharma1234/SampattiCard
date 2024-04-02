@@ -6,12 +6,14 @@ class Domestic_Worker(BaseModel):
     email : str
     workerNumber:int
     employerNumber : int
+    panNumber : str
+    upi_id : str
     class Config:
         from_attributes = True
 
 class Employer(BaseModel):
-    name: str
-    email : str
+    # name: str
+    # email : str
     employerNumber:int
     class Config:
         from_attributes = True
@@ -54,7 +56,13 @@ class Login_Employer(BaseModel):
     password:str    
 
 class Contract(BaseModel):
-    employer_number: int
-    worker_number : int
+    employerNumber: int
+    workerNumber : int
     message : str
     timestamp : str
+
+class Vendor(BaseModel):
+    vpa : str
+    workerNumber : int
+    name : str
+    pan : str

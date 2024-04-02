@@ -1,10 +1,7 @@
-import os
-from tempfile import NamedTemporaryFile
-import tempfile
-from fastapi import APIRouter, HTTPException, UploadFile, File
+from fastapi import APIRouter, UploadFile, File
 import whisper
-from fastapi.responses import JSONResponse
 import torch
+from ..controllers import audiocontroller
 
 torch.cuda.is_available()
 DEVICE = "cuda" if torch.cuda.is_available() else "cpu"
@@ -16,33 +13,5 @@ router = APIRouter(
 )
 
 @router.post("/transcribe")
-async def transcribe(file: UploadFile = File(...)):
-
-    if not file:
-        raise HTTPException(status_code=400, detail="File is not uploaded.")
-
-    results = []
-
-    if not os.path.exists('static'):
-        os.makedirs('static')
-    static_dir = os.path.join(os.getcwd(), 'static')
-    try:
-        with tempfile.NamedTemporaryFile(dir=static_dir, delete=True) as temp:
-            temp.close()
-            temp_file = open(temp.name, "wb")
-            temp_file.write(file.file.read())
-
-            result = whisper.transcribe(audio= temp.name, model=model, fp16=False)
-
-            results.append({
-                "filename": file.filename,
-                "transcript": result["text"]
-            })
-
-  
-    except PermissionError as e:
-        print(f"Error saving temporary file: {e}")
-
-    return JSONResponse(content={"results": results})
-
-
+def transcribe(file: UploadFile = File(...)):
+    return audiocontroller.transcribe(file=file)

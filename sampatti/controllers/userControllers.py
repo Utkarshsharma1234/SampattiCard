@@ -9,11 +9,9 @@ from fastapi.responses import JSONResponse
 
 # creating the employer
 def create_employer(request : schemas.Employer, db: Session):
-    employer_name = request.name
-    employer_email = request.email
-    employer_number = request.employerNumber
 
-    new_user = models.Employer(name = employer_name, email = employer_email, employerNumber = employer_number)
+    employer_number = request.employerNumber
+    new_user = models.Employer(employerNumber = employer_number)
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
@@ -24,18 +22,20 @@ def create_employer(request : schemas.Employer, db: Session):
 def create_domestic_worker(request : schemas.Domestic_Worker, db: Session):
     worker_name = request.name
     worker_email = request.email
-    worker_phoneNumber = request.workerNumber
-    employer_phoneNumber = request.employerNumber
+    workerNumber = request.workerNumber
+    employerNumber = request.employerNumber
+    worker_pan = request.panNumber
+    worker_upi = request.upi_id
 
-    employer = db.query(models.Employer).filter(models.Employer.employerNumber == employer_phoneNumber).first()
+    employer = db.query(models.Employer).filter(models.Employer.employerNumber == employerNumber).first()
 
     if not employer:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="The employer is not registered. You must register the employer first.")
 
-    existing_worker = db.query(models.Domestic_Worker).filter(models.Domestic_Worker.workerNumber == worker_phoneNumber).first()
+    existing_worker = db.query(models.Domestic_Worker).filter(models.Domestic_Worker.workerNumber == workerNumber).first()
     
     if not existing_worker:
-        new_worker = models.Domestic_Worker(name = worker_name, email = worker_email, workerNumber = worker_phoneNumber)
+        new_worker = models.Domestic_Worker(name = worker_name, email = worker_email, workerNumber = workerNumber, panNumber = worker_pan, upi_id = worker_upi)
 
         new_worker.employers.append(employer)
         db.add(new_worker)
@@ -51,20 +51,20 @@ def create_domestic_worker(request : schemas.Domestic_Worker, db: Session):
     
    
 
-# getting a employer
-def get_employer(employerNumber, db :Session):
-    employer = db.query(models.Employer).options(joinedload(models.Employer.workers)).filter(models.Employer.employerNumber == employerNumber).first()
-    if not employer:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Employer not found. Please register yourself first.")
-    return employer
+# # getting a employer
+# def get_employer(employerNumber, db :Session):
+#     employer = db.query(models.Employer).options(joinedload(models.Employer.workers)).filter(models.Employer.employerNumber == employerNumber).first()
+#     if not employer:
+#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Employer not found. Please register yourself first.")
+#     return employer
 
 
-# getting domestic worker
-def get_domestic_worker(workerNumber,db:Session):
-    domestic_worker = db.query(models.Domestic_Worker).options(joinedload(models.Domestic_Worker.employers)).filter(models.Domestic_Worker.workerNumber == workerNumber).first()
-    if not domestic_worker:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Worker not Found.")
-    return domestic_worker
+# # getting domestic worker
+# def get_domestic_worker(workerNumber,db:Session):
+#     domestic_worker = db.query(models.Domestic_Worker).options(joinedload(models.Domestic_Worker.employers)).filter(models.Domestic_Worker.workerNumber == workerNumber).first()
+#     if not domestic_worker:
+#         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Worker not Found.")
+#     return domestic_worker
 
 
 def create_contract(request : schemas.Contract, db):

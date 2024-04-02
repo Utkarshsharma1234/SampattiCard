@@ -12,3 +12,10 @@ aiofiles
 openai-whisper
 cffi
 soundfile
+langchain
+pymupdf
+huggingface-hub
+faiss-cpu
+sentence-transformers
+cashfree_pg
+cashfree_verification
