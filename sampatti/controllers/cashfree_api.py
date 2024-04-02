@@ -7,10 +7,7 @@ from cashfree_pg.models.customer_details import CustomerDetails
 from .. import models
 from sqlalchemy.orm import Session
 from sqlalchemy import update
-from dotenv import load_dotenv
 from sampatti.env import config
-
-load_dotenv()
 
 verification_id= config("CASHFREE_VERIFICATION_ID", default=None)
 verification_secret=config("CASHFREE_VERIFICATION_SECRET", default=None)
