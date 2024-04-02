@@ -1,4 +1,4 @@
-import json, uuid, requests
+import json, uuid, requests, os
 from cashfree_verification.api_client import Cashfree
 from cashfree_verification.models.upi_mobile_request_schema import UpiMobileRequestSchema
 from cashfree_pg.models.create_order_request import CreateOrderRequest
@@ -7,13 +7,16 @@ from cashfree_pg.models.customer_details import CustomerDetails
 from .. import models
 from sqlalchemy.orm import Session
 from sqlalchemy import update
+from dotenv import load_dotenv
+from sampatti.env import config
 
+load_dotenv()
 
-verification_id="CF247908CNU1BNNCGJPB1I184JQ0"
-verification_secret="cfsk_ma_prod_bb3c4a5baf101049ea7ee3a6bc46810e_3cfe1b33"
+verification_id= config("CASHFREE_VERIFICATION_ID", default=None)
+verification_secret=config("CASHFREE_VERIFICATION_SECRET", default=None)
 
-pg_id="2479085b6888e2c6f308be5f99809742"
-pg_secret="cfsk_ma_prod_621ba66b6ae1480acf735eec2769d625_25e34a9c"
+pg_id = config("CASHFREE_PG_ID", default=None)
+pg_secret = config("CASHFREE_PG_SECRET", default=None)
 
 
 # fetching the vpa

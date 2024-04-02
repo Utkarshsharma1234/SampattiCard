@@ -19,3 +19,4 @@ faiss-cpu
 sentence-transformers
 cashfree_pg
 cashfree_verification
+python-decouple
