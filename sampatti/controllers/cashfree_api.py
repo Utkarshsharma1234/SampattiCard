@@ -64,15 +64,14 @@ def payment_link_generation(workerNumber : int, employerNumber : int, db : Sessi
         print(e)
     
     
-    print(pg_id)
-    # response = dict(api_response.data)
-    # update_statement = update(models.worker_employer).where(models.worker_employer.c.worker_number == workerNumber).where(models.worker_employer.c.employer_number == employerNumber).values(order_id= response["order_id"])
+    response = dict(api_response.data)
+    update_statement = update(models.worker_employer).where(models.worker_employer.c.worker_number == workerNumber).where(models.worker_employer.c.employer_number == employerNumber).values(order_id= response["order_id"])
 
-    # db.execute(update_statement)
-    # db.commit()
+    db.execute(update_statement)
+    db.commit()
 
-    # payment_session_id = response["payment_session_id"]
-    # return f"https://sampatticard.in/payment/{payment_session_id}"
+    payment_session_id = response["payment_session_id"]
+    return f"https://sampatticard.in/payment/{payment_session_id}"
 
 
 # adding a vendor to the cashfree dashboard.
