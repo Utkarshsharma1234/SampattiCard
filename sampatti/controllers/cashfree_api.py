@@ -8,13 +8,19 @@ from .. import models
 from sqlalchemy.orm import Session
 from sqlalchemy import update
 from sampatti.env import config
+from dotenv import load_dotenv
 
-verification_id= config("CASHFREE_VERIFICATION_ID", default=None)
-verification_secret=config("CASHFREE_VERIFICATION_SECRET", default=None)
+load_dotenv()
 
-pg_id = config("CASHFREE_PG_ID", default=None)
-pg_secret = config("CASHFREE_PG_SECRET", default=None)
+# verification_id= config("CASHFREE_VERIFICATION_ID", default=None)
+# verification_secret=config("CASHFREE_VERIFICATION_SECRET", default=None)
+verification_id= os.environ.get('CASHFREE_VERIFICATION_ID')
+verification_secret = os.environ.get('CASHFREE_VERIFICATION_SECRET')
 
+# pg_id = config("CASHFREE_PG_ID", default=None)
+# pg_secret = config("CASHFREE_PG_SECRET", default=None)
+pg_id = os.environ.get('CASHFREE_PG_ID')
+pg_secret = os.environ.get('CASHFREE_PG_SECRET')
 
 # fetching the vpa
 
@@ -25,6 +31,7 @@ def fetch_vpa(workerNumber : int):
     uuid_value = uuid.uuid4().hex
 
     user_info = UpiMobileRequestSchema(mobile_number= f"{workerNumber}", verification_id = uuid_value)
+
     api_response = None
     try:
         api_response = Cashfree().vrs_upi_mobile_verification(user_info, None)
@@ -44,7 +51,6 @@ def payment_link_generation(workerNumber : int, employerNumber : int, db : Sessi
     Cashfree.XEnvironment = Cashfree.XProduction
     x_api_version = "2023-08-01"
 
-
     item = db.query(models.worker_employer).filter((models.worker_employer.c.worker_number == workerNumber) & (models.worker_employer.c.employer_number == employerNumber)).first()
 
     customerDetails = CustomerDetails(customer_id= f"{workerNumber}", customer_phone= f"{employerNumber}")
@@ -58,7 +64,6 @@ def payment_link_generation(workerNumber : int, employerNumber : int, db : Sessi
         print(e)
         
     response = dict(api_response.data)
-
     update_statement = update(models.worker_employer).where(models.worker_employer.c.worker_number == workerNumber).where(models.worker_employer.c.employer_number == employerNumber).values(order_id= response["order_id"])
 
     db.execute(update_statement)
