@@ -1,5 +1,5 @@
 import json, uuid, requests, os
-from cashfree_verification.api_client import Cashfree
+from cashfree_verification.api_client import Cashfree as Cashfree_Verification
 from cashfree_verification.models.upi_mobile_request_schema import UpiMobileRequestSchema
 from cashfree_pg.models.create_order_request import CreateOrderRequest
 from cashfree_pg.api_client import Cashfree
@@ -25,17 +25,19 @@ pg_secret = os.environ.get('CASHFREE_PG_SECRET')
 # fetching the vpa
 
 def fetch_vpa(workerNumber : int):
-    Cashfree.XClientId = verification_id
-    Cashfree.XClientSecret = verification_secret
-    Cashfree.XEnvironment = Cashfree.XProduction
+    Cashfree_Verification.XClientId = verification_id
+    Cashfree_Verification.XClientSecret = verification_secret
+    Cashfree_Verification.XEnvironment = Cashfree_Verification.XProduction
     uuid_value = uuid.uuid4().hex
 
+    print(verification_id)
+    print(verification_secret)
     user_info = UpiMobileRequestSchema(mobile_number= f"{workerNumber}", verification_id = uuid_value)
 
     api_response = None
     try:
-        api_response = Cashfree().vrs_upi_mobile_verification(user_info, None)
-        print(api_response.data)
+        api_response = Cashfree_Verification().vrs_upi_mobile_verification(user_info, None)
+        # print(api_response.data)
     except Exception as e:
         print(e)
     
