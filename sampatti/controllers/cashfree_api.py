@@ -29,9 +29,7 @@ def fetch_vpa(workerNumber : int):
     Cashfree_Verification.XClientSecret = verification_secret
     Cashfree_Verification.XEnvironment = Cashfree_Verification.XProduction
     uuid_value = uuid.uuid4().hex
-
-    print(verification_id)
-    print(verification_secret)
+    
     user_info = UpiMobileRequestSchema(mobile_number= f"{workerNumber}", verification_id = uuid_value)
 
     api_response = None
