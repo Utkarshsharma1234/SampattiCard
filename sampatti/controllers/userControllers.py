@@ -10,12 +10,19 @@ from fastapi.responses import JSONResponse
 # creating the employer
 def create_employer(request : schemas.Employer, db: Session):
 
-    employer_number = request.employerNumber
-    new_user = models.Employer(employerNumber = employer_number)
-    db.add(new_user)
-    db.commit()
-    db.refresh(new_user)
-    return new_user
+    employerNumber = request.employerNumber
+
+    employer = db.query(models.Employer).filter(models.Employer.employerNumber == employerNumber).first()
+
+    if not employer :
+        new_user = models.Employer(employerNumber = employerNumber)
+        db.add(new_user)
+        db.commit()
+        db.refresh(new_user)
+        return new_user
+    
+    else:
+        {"message" : "Employer already Exists."}
 
 
 # creating a domestic worker
