@@ -4,16 +4,20 @@ from fastapi import HTTPException, status
 from reportlab.lib.pagesizes import A4
 from sqlalchemy.orm import Session
 from .. import models, schemas
+from datetime import datetime
 
 def create_employment_record_pdf(request: schemas.Contract, db:Session):
   
     worker = db.query(models.Domestic_Worker).filter(models.Domestic_Worker.workerNumber == request.workerNumber).first()
 
+    current_time = datetime.now()
+    current_month = current_time.strftime("%B")
+
     if not worker :
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="The domestic worker is not registered. You must register the worker first.")
         
     static_dir = os.path.join(os.getcwd(), 'contracts')
-    pdf_path = os.path.join(static_dir, f"{request.workerNumber}_employment_contract.pdf")
+    pdf_path = os.path.join(static_dir, f"{request.workerNumber}_contract_{current_month}.pdf")
 
     if not os.path.exists('contracts'):
         os.makedirs('contracts')
@@ -35,7 +39,7 @@ def create_employment_record_pdf(request: schemas.Contract, db:Session):
     # Employer Information
     c.setFont("Helvetica-Bold", 14)
     c.drawString(x, y-50, "Reference Number:")
-    c.drawString(x, y-75, "Employer Whatsapp Number:")
+    c.drawString(x, y-75, f"Employer Whatsapp Number: {request.employerNumber}")
     c.drawString(x, y-100, "Domestic Worker ID:")
 
     y = y - 150
@@ -45,28 +49,28 @@ def create_employment_record_pdf(request: schemas.Contract, db:Session):
     c.drawString(x, y, "Whatsapp Chat:")
 
     # Chat Transcript
-    chat_text = """Employer: I'm interested in onboarding my domestic worker for salary slip
+    chat_text = f"""Employer: I'm interested in onboarding my domestic worker for salary slip
 issuance.
 
 Sampatti Bot: That's fantastic! We assure you a quick process. Could you please
 provide us with the phone number of your domestic worker?
 
-Employer: 7015645195
+Employer: {request.workerNumber}
 
 Sampatti Bot: Thank you for sharing. We are verifying her account.
 
 Sampatti Bot: We have verified your domestic worker's account details. Please
 press "Yes' if the following details are correct:
 
-Name of domestic worker: Vrashali
+Name of domestic worker: {request.name}
 
-VPA: vrashali267@okaxis
+VPA: {request.upi}
 
 Employer: Yes
 
 Sampatti Bot: That's great. Could you please provide us with her monthly salary?
 
-Employer: Her monthly salary is 4,500.
+Employer: Her monthly salary is {request.salary}.
 
 Sampatti Bot: Excellent. We will now set up a monthly salary payment process for
 you. A reminder and payment link will be sent to you at the end of each month.
@@ -82,9 +86,8 @@ Thanks."""
 
     y = y - 30
     # Timestamp
-    time = "2024-03-26 10:10:15.261456"
     c.setFont("Helvetica", 12)
-    c.drawString(x, y, f"Timestamp : {time}")
+    c.drawString(x, y, f"Timestamp : {current_time}")
 
     # Verfication and Signature
 

@@ -59,7 +59,9 @@ class Contract(BaseModel):
     employerNumber: int
     workerNumber : int
     message : str
-    timestamp : str
+    upi : str
+    name : str
+    salary : int
 
 class Vendor(BaseModel):
     vpa : str
