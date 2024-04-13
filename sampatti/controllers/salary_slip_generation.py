@@ -20,7 +20,7 @@ def generate_salary_slip(workerNumber, db:Session) :
     current_month = current_date.month
     current_year = current_date.year
     if not worker :
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="The domestic worker is not registered. You must register the worker first.")
+        raise HTTPException(status_code=404, detail="The domestic worker is not registered. You must register the worker first.")
     
     static_dir = os.path.join(os.getcwd(), 'static')
     pdf_path = os.path.join(static_dir, f"{workerNumber}_salary_slip_{current_month}.pdf")

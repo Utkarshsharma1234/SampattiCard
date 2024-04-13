@@ -37,7 +37,7 @@ def create_domestic_worker(request : schemas.Domestic_Worker, db: Session):
     employer = db.query(models.Employer).filter(models.Employer.employerNumber == employerNumber).first()
 
     if not employer:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="The employer is not registered. You must register the employer first.")
+        raise HTTPException(status_code=404, detail="The employer is not registered. You must register the employer first.")
 
     existing_worker = db.query(models.Domestic_Worker).filter(models.Domestic_Worker.workerNumber == workerNumber).first()
     

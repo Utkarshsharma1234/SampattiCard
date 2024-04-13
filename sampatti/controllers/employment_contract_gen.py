@@ -14,7 +14,7 @@ def create_employment_record_pdf(request: schemas.Contract, db:Session):
     current_month = current_time.strftime("%B")
 
     if not worker :
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="The domestic worker is not registered. You must register the worker first.")
+        raise HTTPException(status_code=404, detail="The domestic worker is not registered. You must register the worker first.")
         
     static_dir = os.path.join(os.getcwd(), 'contracts')
     pdf_path = os.path.join(static_dir, f"{request.workerNumber}_contract_{current_month}.pdf")
