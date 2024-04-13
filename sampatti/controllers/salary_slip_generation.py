@@ -17,7 +17,7 @@ def generate_salary_slip(workerNumber, db:Session) :
     worker = db.query(models.Domestic_Worker).filter(models.Domestic_Worker.workerNumber == workerNumber).first()
     
     current_date = datetime.now()
-    current_month = current_date.month
+    current_month = datetime.now().strftime("%B")
     current_year = current_date.year
     if not worker :
         raise HTTPException(status_code=404, detail="The domestic worker is not registered. You must register the worker first.")
