@@ -71,7 +71,7 @@ def payment_link_generation(workerNumber : int, employerNumber : int, db : Sessi
     db.commit()
 
     payment_session_id = response["payment_session_id"]
-    return f"https://sampatticard.in/payment/{payment_session_id}"
+    return {"payment_session_id" : f"https://sampatticard.in/payment/{payment_session_id}"}
 
 
 # adding a vendor to the cashfree dashboard.
@@ -110,6 +110,7 @@ def add_a_vendor(vpa : str, workerNumber : int, name : str, pan : str):
 
     response = requests.post(url, json=payload, headers=headers)
 
+    return uuid_value
     print(response.text)
 
 # checking the order status
