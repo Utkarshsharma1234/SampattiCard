@@ -16,21 +16,21 @@ def generate_salary_slip(workerNumber, db:Session) :
 
     worker = db.query(models.Domestic_Worker).filter(models.Domestic_Worker.workerNumber == workerNumber).first()
     
-    current_date = datetime.now()
+    current_date = datetime.now().date()
     current_month = datetime.now().strftime("%B")
-    current_year = current_date.year
+    current_year = datetime.now().year
     if not worker :
         raise HTTPException(status_code=404, detail="The domestic worker is not registered. You must register the worker first.")
     
     static_dir = os.path.join(os.getcwd(), 'static')
-    pdf_path = os.path.join(static_dir, f"{workerNumber}_salary_slip_{current_month}.pdf")
+    pdf_path = os.path.join(static_dir, f"{workerNumber}_SS_{current_month}_{current_year}.pdf")
 
     if not os.path.exists('static'):
         os.makedirs('static')
     w, h = A4
     c = canvas.Canvas(pdf_path, pagesize=A4)
     
-    flat_logo = os.path.join(os.getcwd(), 'logos/flat_logo.png')
+    flat_logo = os.path.join(os.getcwd(), 'logos/flat_logo.jpg')
     circular_logo = os.path.join(os.getcwd(), 'logos/circular_logo.png')
 
     c.setFont("Helvetica-Bold", 18)

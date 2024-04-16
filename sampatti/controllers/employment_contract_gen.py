@@ -11,18 +11,17 @@ def create_employment_record_pdf(request: schemas.Contract, db:Session):
     worker = db.query(models.Domestic_Worker).filter(models.Domestic_Worker.workerNumber == request.workerNumber).first()
 
     current_time = datetime.now()
-    current_month = current_time.strftime("%B")
 
     if not worker :
         raise HTTPException(status_code=404, detail="The domestic worker is not registered. You must register the worker first.")
         
     static_dir = os.path.join(os.getcwd(), 'contracts')
-    pdf_path = os.path.join(static_dir, f"{request.workerNumber}_contract_{current_month}.pdf")
+    pdf_path = os.path.join(static_dir, f"{request.workerNumber}_ER_{request.employerNumber}.pdf")
 
     if not os.path.exists('contracts'):
         os.makedirs('contracts')
 
-    flat_logo = os.path.join(os.getcwd(), 'logos/flat_logo.png')
+    flat_logo = os.path.join(os.getcwd(), 'logos/flat_logo.jpg')
     circular_logo = os.path.join(os.getcwd(), 'logos/circular_logo.png')
 
     c = canvas.Canvas(pdf_path, pagesize=A4)
@@ -40,7 +39,7 @@ def create_employment_record_pdf(request: schemas.Contract, db:Session):
     c.setFont("Helvetica-Bold", 14)
     c.drawString(x, y-50, "Reference Number:")
     c.drawString(x, y-75, f"Employer Whatsapp Number: {request.employerNumber}")
-    c.drawString(x, y-100, "Domestic Worker ID:")
+    c.drawString(x, y-100, f"Domestic Worker ID: 010-{request.workerNumber}")
 
     y = y - 150
 

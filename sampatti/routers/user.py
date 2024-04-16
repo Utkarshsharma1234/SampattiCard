@@ -34,19 +34,19 @@ def generate_salary_slip_endpoint(workerNumber : int, db: Session = Depends(get_
 
     salary_slip_generation.generate_salary_slip(workerNumber, db)
     current_month = datetime.now().strftime("%B")
+    current_year = datetime.now().year
 
-    static_pdf_path = os.path.join(os.getcwd(), 'static', f"{workerNumber}_salary_slip_{current_month}.pdf")
+    static_pdf_path = os.path.join(os.getcwd(), 'static', f"{workerNumber}_SS_{current_month}_{current_year}.pdf")
 
-    return FileResponse(static_pdf_path, media_type='application/pdf', filename=f"{workerNumber}_salary_slip_{current_month}.pdf")
+    return FileResponse(static_pdf_path, media_type='application/pdf', filename=f"{workerNumber}_SS_{current_month}_{current_year}.pdf")
 
 
 @router.post("/contract")
 def contract_generation(request : schemas.Contract, db : Session = Depends(get_db)):
 
     employment_contract_gen.create_employment_record_pdf(request, db)
-    current_month = datetime.now().strftime("%B")
 
-    static_pdf_path = os.path.join(os.getcwd(), 'contracts', f"{request.workerNumber}_contract_{current_month}.pdf")
+    static_pdf_path = os.path.join(os.getcwd(), 'contracts', f"{request.workerNumber}_ER_{request.employerNumber}.pdf")
 
-    return FileResponse(static_pdf_path, media_type='application/pdf', filename=f"{request.workerNumber}_contract_{current_month}.pdf")
+    return FileResponse(static_pdf_path, media_type='application/pdf', filename=f"{request.workerNumber}_ER_{request.employerNumber}.pdf")
     
