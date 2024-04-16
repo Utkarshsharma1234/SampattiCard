@@ -58,7 +58,6 @@ class Login_Employer(BaseModel):
 class Contract(BaseModel):
     employerNumber: int
     workerNumber : int
-    message : str
     upi : str
     name : str
     salary : int
