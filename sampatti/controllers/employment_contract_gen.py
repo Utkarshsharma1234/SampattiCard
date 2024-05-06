@@ -8,12 +8,12 @@ from datetime import datetime
 
 def create_employment_record_pdf(request: schemas.Contract, db:Session):
   
-    worker = db.query(models.Domestic_Worker).filter(models.Domestic_Worker.workerNumber == request.workerNumber).first()
+    # worker = db.query(models.Domestic_Worker).filter(models.Domestic_Worker.workerNumber == request.workerNumber).first()
 
     current_time = datetime.now()
 
-    if not worker :
-        raise HTTPException(status_code=404, detail="The domestic worker is not registered. You must register the worker first.")
+    # if not worker :
+    #     raise HTTPException(status_code=404, detail="The domestic worker is not registered. You must register the worker first.")
         
     static_dir = os.path.join(os.getcwd(), 'contracts')
     pdf_path = os.path.join(static_dir, f"{request.workerNumber}_ER_{request.employerNumber}.pdf")
