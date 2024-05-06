@@ -135,16 +135,16 @@ def pan_verification(pan : str, name : str):
     Cashfree_Verification.XClientId = verification_id
     Cashfree_Verification.XClientSecret = verification_secret
     Cashfree_Verification.XEnvironment = Cashfree_Verification.XProduction
-    version = "2023-08-01"
+    uuid_val = uuid.uuid4().hex
 
-    pan_schema = PanAdvanceRequestSchema(pan=pan, verification_id="randomvalue", name=name)
+    pan_schema = PanAdvanceRequestSchema(pan=pan, verification_id=uuid_val, name=name)
 
     api_response = None
     try:
         api_response = Cashfree_Verification().vrs_pan_advance_verification(pan_schema, None)
         # print(api_response.data)
     except Exception as e:
-        raise HTTPException(status_code=400, detail= "Invalid Pan Number.")
+        print(e)
     
     response = dict(api_response.data)
     return response
