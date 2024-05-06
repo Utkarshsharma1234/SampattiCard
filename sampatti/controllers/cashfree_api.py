@@ -1,6 +1,7 @@
 import json, uuid, requests, os
 from cashfree_verification.api_client import Cashfree as Cashfree_Verification
 from cashfree_verification.models.upi_mobile_request_schema import UpiMobileRequestSchema
+from cashfree_verification.models.pan_advance_request_schema import PanAdvanceRequestSchema
 from cashfree_pg.models.create_order_request import CreateOrderRequest
 from cashfree_pg.api_client import Cashfree
 from cashfree_pg.models.customer_details import CustomerDetails
@@ -11,14 +12,9 @@ from sampatti.env import config
 from dotenv import load_dotenv
 
 load_dotenv()
-
-# verification_id= config("CASHFREE_VERIFICATION_ID", default=None)
-# verification_secret=config("CASHFREE_VERIFICATION_SECRET", default=None)
 verification_id= os.environ.get('CASHFREE_VERIFICATION_ID')
 verification_secret = os.environ.get('CASHFREE_VERIFICATION_SECRET')
 
-# pg_id = config("CASHFREE_PG_ID", default=None)
-# pg_secret = config("CASHFREE_PG_SECRET", default=None)
 pg_id = os.environ.get('CASHFREE_PG_ID')
 pg_secret = os.environ.get('CASHFREE_PG_SECRET')
 
@@ -134,5 +130,21 @@ def check_order_status(order_id):
     return order_status
     
 
+def pan_verification(pan : str, name : str):
+    Cashfree_Verification.XClientId = verification_id
+    Cashfree_Verification.XClientSecret = verification_secret
+    Cashfree_Verification.XEnvironment = Cashfree_Verification.XProduction
+    version = "2023-08-01"
 
+    pan_schema = PanAdvanceRequestSchema(pan=pan, verification_id="randomvalue", name=name)
+
+    api_response = None
+    try:
+        api_response = Cashfree_Verification().vrs_pan_advance_verification(pan_schema, None)
+        # print(api_response.data)
+    except Exception as e:
+        print(e)
+    
+    response = dict(api_response.data)
+    return response
 

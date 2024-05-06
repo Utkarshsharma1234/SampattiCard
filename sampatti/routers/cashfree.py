@@ -29,3 +29,7 @@ def payment_link_generation(workerNumber : int, employerNumber : int, db : Sessi
 @router.post("/add_a_vendor")
 def add_a_vendor(request : schemas.Vendor):
     return cashfree_api.add_a_vendor(request.vpa, request.workerNumber, request.name, request.pan)
+
+@router.post("/pan_verification")
+def pan_verification(pan : str, name : str):
+    return cashfree_api.pan_verification(pan, name)
