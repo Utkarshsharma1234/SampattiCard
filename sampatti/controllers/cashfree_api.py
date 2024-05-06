@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 import json, uuid, requests, os
 from cashfree_verification.api_client import Cashfree as Cashfree_Verification
 from cashfree_verification.models.upi_mobile_request_schema import UpiMobileRequestSchema
@@ -143,7 +144,7 @@ def pan_verification(pan : str, name : str):
         api_response = Cashfree_Verification().vrs_pan_advance_verification(pan_schema, None)
         # print(api_response.data)
     except Exception as e:
-        print(e)
+        raise HTTPException(status_code=400, detail= "Invalid Pan Number.")
     
     response = dict(api_response.data)
     return response
