@@ -10,8 +10,6 @@ from dotenv import load_dotenv
 from datetime import datetime
 
 load_dotenv()
-verification_id= os.environ.get('CASHFREE_VERIFICATION_ID')
-verification_secret = os.environ.get('CASHFREE_VERIFICATION_SECRET')
 
 pg_id = os.environ.get('CASHFREE_PG_ID')
 pg_secret = os.environ.get('CASHFREE_PG_SECRET')
@@ -22,13 +20,11 @@ orai_namespace = os.environ.get('ORAI_NAMESPACE')
 current_month = datetime.now().strftime("%B")
 current_year = datetime.now().year
 
-
 def payment_link_generation(db : Session):
     Cashfree.XClientId = pg_id
     Cashfree.XClientSecret = pg_secret
     Cashfree.XEnvironment = Cashfree.XProduction
     x_api_version = "2023-08-01"
-
 
     payment_ids = []
     total_workers = db.query(models.worker_employer).all()
@@ -45,13 +41,14 @@ def payment_link_generation(db : Session):
 
         response = dict(api_response.data)
         payment_session_id = response["payment_session_id"]
+
         send_whatsapp_message(api_key=orai_api_key,namespace=orai_namespace,cust_name=item.employer_number,dw_name=item.worker_number, month_year= f"{current_month} {current_year}",session_id=payment_session_id,receiver_number=f"91{item.employer_number}")
+
         update_statement = update(models.worker_employer).where(models.worker_employer.c.worker_number == item.worker_number).where(models.worker_employer.c.employer_number == item.employer_number).values(order_id= response["order_id"])
 
 
         db.execute(update_statement)
         db.commit()
         payment_ids.append(payment_session_id)
-        
 
     return payment_ids

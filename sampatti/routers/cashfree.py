@@ -5,8 +5,6 @@ from .. import schemas
 from ..database import get_db
 from sqlalchemy.orm import Session
 from ..controllers import cashfree_api, send_salary_link
-from sqlalchemy import select
-from .. import models
 
 router = APIRouter(
     prefix="/cashfree",
