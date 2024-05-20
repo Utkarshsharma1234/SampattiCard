@@ -23,7 +23,7 @@ def generate_salary_slip(workerNumber, db:Session) :
         raise HTTPException(status_code=404, detail="The domestic worker is not registered. You must register the worker first.")
     
     static_dir = os.path.join(os.getcwd(), 'static')
-    pdf_path = os.path.join(static_dir, f"{workerNumber}_SS_{current_month}_{current_year}.pdf")
+    pdf_path = os.path.join(static_dir, f"{worker.id}_SS_{current_month}_{current_year}.pdf")
 
     if not os.path.exists('static'):
         os.makedirs('static')
@@ -39,9 +39,9 @@ def generate_salary_slip(workerNumber, db:Session) :
     c.drawImage(flat_logo, w-120, h-55, width=100, height=45)
     text = "Propublica Finance and Investment Services Pvt. Ltd."
     size = len(text)
-    c.drawString(w/2 - size*4, h-80, text=text)
+    c.drawString(w/2 - size*4.5, h-80, text=text)
 
-    x = 70
+    x = 50
     y = h - 110
 
     c.setFont("Helvetica", 14)
@@ -55,7 +55,8 @@ def generate_salary_slip(workerNumber, db:Session) :
 
     y -= 40
     c.setFont("Helvetica-Bold", 14)
-    c.drawString(w/2-size*2, y, "Salary Record") 
+    size = len("Salary Record")
+    c.drawString(w/2-size*5, y, "Salary Record") 
 
     c.setFont("Times-Roman", 10)
 
@@ -95,18 +96,21 @@ def generate_salary_slip(workerNumber, db:Session) :
         order_id = transaction.order_id
         status = check_order_status(order_id=order_id)
         if status == "PAID":
-            single_row = [ct, transaction.employer_number, "UPI", transaction.worker_number, transaction.salary_amount, "Variable Pay"]
+            single_row = [ct, transaction.employer_number, "UPI", transaction.order_id, transaction.salary_amount, "Variable Pay"]
             receipt_data.append(single_row)
+            rows += 1
             ct += 1
             total_salary += transaction.salary_amount
 
         else:
             continue
-        
+
     receipt_style = TableStyle([
         ('TEXTCOLOR', (0, 0), (-1, -1), colors.Color(0.078, 0.33, 0.45)),
         ('FONTSIZE', (0, 0), (-1, -1), 10),
         ('BOTTOMPADDING', (0, 0), (-1, -1), 10),
+        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),  
+        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
         ('RIGHTPADDING', (0,0), (-1,-1), 10),
         ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
         ('GRID', (0, 0), (-1, -1), 1, colors.black)
@@ -142,7 +146,7 @@ The money has been debited in the corresponding bank account."""
 
     y -= 10
 
-    c.drawImage(circular_logo, 25, y-20 , 30, 30)
+    c.drawImage(circular_logo, 15, y-20 , 30, 30)
 
     declaration = """Declaration : The transaction trail is verified with an employment agreement between the employer and the 
 employee basis which the salary slip is issued. Propublica Finance and Investment Services Pvt. Ltd. is not the 

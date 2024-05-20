@@ -14,7 +14,7 @@ worker_employer = Table('worker_employer', Base.metadata,
 class Domestic_Worker(Base):
 
     __tablename__ = "Domestic_Worker"
-    id = Column(Integer, index=True, primary_key=True)
+    id = Column(String, primary_key=True)
     name = Column(String, nullable=True)
     email = Column(String, nullable=True)
     workerNumber = Column(Integer)
@@ -25,11 +25,14 @@ class Domestic_Worker(Base):
 
 class Employer(Base):
     __tablename__ = "Employer"
-    id = Column(Integer, primary_key=True, index=True)
-    # name = Column(String, nullable=True)
-    # email = Column(String, nullable=True)
+    id = Column(String, primary_key=True)
     employerNumber = Column(Integer)
     workers = relationship("Domestic_Worker", secondary="worker_employer",back_populates='employers')
+
+class TalkToAgentEmployer(Base):
+    __tablename__ = "Talk_To_Agent"
+    id = Column(String, primary_key=True)
+    employerNumber = Column(Integer)
 
 
 class Contract(Base) :

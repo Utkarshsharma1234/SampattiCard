@@ -1,8 +1,7 @@
 import os
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import FileResponse
-import httpx
-from .. import schemas
+from .. import schemas, models
 from ..database import get_db
 from sqlalchemy.orm import Session
 from ..controllers import userControllers, salary_slip_generation
@@ -26,6 +25,15 @@ def create_domestic_worker(request : schemas.Domestic_Worker, db: Session = Depe
     return userControllers.create_domestic_worker(request, db)
 
 
+@router.post('/talk_to_agent/create')
+def create_talk_to_agent_employer(employerNumber : int, db : Session = Depends(get_db)):
+    return userControllers.create_talk_to_agent_employer(employerNumber, db)
+
+@router.put('/domestic_worker/update')
+def update_worker(oldNumber : int, newNumber: int, db : Session = Depends(get_db)):
+    return userControllers.update_worker(oldNumber,newNumber, db)
+
+
 @router.post("/salary")
 def insert_salary(request : schemas.Salary, db : Session = Depends(get_db)):
     return userControllers.insert_salary(request, db)
@@ -38,9 +46,11 @@ def generate_salary_slip_endpoint(workerNumber : int, db: Session = Depends(get_
     current_month = datetime.now().strftime("%B")
     current_year = datetime.now().year
 
-    static_pdf_path = os.path.join(os.getcwd(), 'static', f"{workerNumber}_SS_{current_month}_{current_year}.pdf")
+    worker = db.query(models.Domestic_Worker).filter(models.Domestic_Worker.workerNumber == workerNumber).first()
 
-    return FileResponse(static_pdf_path, media_type='application/pdf', filename=f"{workerNumber}_SS_{current_month}_{current_year}.pdf")
+    static_pdf_path = os.path.join(os.getcwd(), 'static', f"{worker.id}_SS_{current_month}_{current_year}.pdf")
+
+    return FileResponse(static_pdf_path, media_type='application/pdf', filename=f"{worker.id}_SS_{current_month}_{current_year}.pdf")
 
 
 @router.post("/contract")

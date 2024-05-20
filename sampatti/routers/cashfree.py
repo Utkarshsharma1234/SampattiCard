@@ -20,6 +20,10 @@ def fetch_vpa(workerNumber : int):
 def payment_link_generation(db : Session = Depends(get_db)):
     return send_salary_link.payment_link_generation(db)
 
+@router.get("order_status")
+def check_order_status(orderId : str):
+    return cashfree_api.check_order_status(orderId)
+
 @router.post("/add_a_vendor")
 def add_a_vendor(request : schemas.Vendor):
     return cashfree_api.add_a_vendor(request.vpa, request.workerNumber, request.name, request.pan)
