@@ -7,7 +7,8 @@ worker_employer = Table('worker_employer', Base.metadata,
     Column('employer_number', ForeignKey('Employer.employerNumber'), primary_key=True),
     Column('salary_amount', Integer, default=0),
     Column('order_id', String, default=''),
-    Column('status', String, default='')
+    Column('status', String, default=''),
+    Column('vendor_id', String, default='')
 )
 
 

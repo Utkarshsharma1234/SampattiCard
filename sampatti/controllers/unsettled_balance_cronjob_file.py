@@ -1,7 +1,7 @@
 import requests
 
 def main():
-    url = "http://localhost:8000/cashfree/payment_link" 
+    url = "http://localhost:8000/cashfree/unsettled_balance" 
     response = requests.get(url)
     if response.status_code == 200:
         print("Request successful:", response.json())
