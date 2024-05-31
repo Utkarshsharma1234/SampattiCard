@@ -40,9 +40,13 @@ def fetch_vpa(workerNumber : int):
     api_response = None
     try:
         api_response = Cashfree_Verification().vrs_upi_mobile_verification(user_info, None)
-        # print(api_response.data)
+        if not api_response or not api_response.data:
+            raise HTTPException(status_code=400, detail="Bad request: No response from API")
+        
     except Exception as e:
+        # Log the exception and raise a 400 HTTP exception with the error message
         print(e)
+        raise HTTPException(status_code=400, detail=f"Bad request: No response from API")
     
     response = dict(api_response.data)
     return response
@@ -129,6 +133,7 @@ def pan_verification(pan : str, name : str):
         # print(api_response.data)
     except Exception as e:
         print(e)
+        raise HTTPException(status_code=400, detail=f"Bad request: No response from API")
     
     response = dict(api_response.data)
     return response
