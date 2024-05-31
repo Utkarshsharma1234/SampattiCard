@@ -1,3 +1,4 @@
+from datetime import datetime
 from fastapi import HTTPException, status
 from sqlalchemy import update
 import uuid, random, string
@@ -10,7 +11,7 @@ import json
 from fastapi.responses import JSONResponse
 
 
-def generate_unique_id(length=20):
+def generate_unique_id(length=8):
 
     unique_id = uuid.uuid4().hex
     letters_only = ''.join([char for char in unique_id if char.isalpha()])[:length]
@@ -49,7 +50,7 @@ def create_domestic_worker(request : schemas.Domestic_Worker, db: Session):
     employer = db.query(models.Employer).filter(models.Employer.employerNumber == employerNumber).first()
 
     if not employer:
-        raise HTTPException(status_code=404, detail="The employer is not registered. You must register the employer first.")
+        raise HTTPException(status_code=400, detail="The employer is not registered. You must register the employer first.")
 
     existing_worker = db.query(models.Domestic_Worker).filter(models.Domestic_Worker.workerNumber == workerNumber).first()
     
@@ -60,12 +61,22 @@ def create_domestic_worker(request : schemas.Domestic_Worker, db: Session):
         db.add(new_worker)
         db.commit()
         db.refresh(new_worker)
+
+        unique_id2 = generate_unique_id()
+        update_statement = update(models.worker_employer).where(models.worker_employer.c.worker_number == workerNumber).where(models.worker_employer.c.employer_number == employer.employerNumber).values(id=unique_id2)
+        db.execute(update_statement)
+        db.commit()
         return new_worker
     
     else:
         existing_worker.employers.append(employer)
         db.commit()
         db.refresh(existing_worker)
+
+        unique_id2 = generate_unique_id()
+        update_statement = update(models.worker_employer).where(models.worker_employer.c.worker_number == workerNumber).where(models.worker_employer.c.employer_number == employer.employerNumber).values(id=unique_id2)
+        db.execute(update_statement)
+        db.commit()
         return existing_worker
     
 
@@ -94,19 +105,15 @@ def insert_salary(request : schemas.Salary, db : Session):
 
 def create_talk_to_agent_employer(employerNumber : int, db:Session):
 
-    employer = db.query(models.TalkToAgentEmployer).filter(models.TalkToAgentEmployer.employerNumber == employerNumber).first()
+    current_date = datetime.now().date()
 
-    if not employer :
-        unique_id = generate_unique_id()
-        new_user = models.TalkToAgentEmployer(id = unique_id, employerNumber = employerNumber)
-        db.add(new_user)
-        db.commit()
-        db.refresh(new_user)
-        return new_user
+    unique_id = generate_unique_id()
+    new_user = models.TalkToAgentEmployer(id = unique_id, employerNumber = employerNumber, date=f"{current_date}")
+    db.add(new_user)
+    db.commit()
+    db.refresh(new_user)
+    return new_user
     
-    else:
-        {"message" : "Employer already Exists."}
-
 
 def create_contract(request : schemas.Contract, db):
 

@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from ..controllers import userControllers, salary_slip_generation
 from ..controllers import employment_contract_gen
 from datetime import datetime
-import requests
+from ..controllers import whatsapp_message
 
 
 router = APIRouter(
@@ -57,36 +57,13 @@ def generate_salary_slip_endpoint(workerNumber : int, db: Session = Depends(get_
 def contract_generation(request : schemas.Contract, db : Session = Depends(get_db)):
 
     employment_contract_gen.create_employment_record_pdf(request, db)
+    field = db.query(models.worker_employer).filter(models.worker_employer.c.worker_number == request.workerNumber, models.worker_employer.c.employer_number == request.employerNumber).first()
 
-    static_pdf_path = os.path.join(os.getcwd(), 'contracts', f"{request.workerNumber}_ER_{request.employerNumber}.pdf")
+    static_pdf_path = os.path.join(os.getcwd(), 'contracts', f"{field.id}_ER.pdf")
 
     return FileResponse(static_pdf_path, media_type='application/pdf', filename=f"{request.workerNumber}_ER_{request.employerNumber}.pdf")
     
     
 @router.post("/generate_contract")
-def generate(workerNumber: int, employerNumber: int):
-
-    url = "https://waba-v2.360dialog.io/media"
-    static_pdf_path = os.path.join(os.getcwd(), 'contracts', f"{workerNumber}_ER_{employerNumber}.pdf")
-
-    if os.path.exists(static_pdf_path):
-        headers = {
-            "D360-API-KEY": "DFrBXp0qYnJIOvtWrFUPc4TkAK"
-        }
-        data = {
-            "messaging_product": "whatsapp"
-        }
-        files = {
-            "file": (f"{workerNumber}_ER_{employerNumber}.pdf", open(static_pdf_path, "rb"), "application/pdf")
-        }
-
-        try:
-            response = requests.post(url, headers=headers, data=data, files=files)
-            response.raise_for_status()
-            return response.json()
-        except Exception as e:
-
-            print(f"Exception occurred: {e}")
-            raise HTTPException(status_code=500, detail="Internal server error")
-    else:
-        raise HTTPException(status_code=404, detail="PDF file not found")
+def generate(workerNumber: int, employerNumber: int, db : Session = Depends(get_db)):
+    return whatsapp_message.generate(workerNumber, employerNumber, db)

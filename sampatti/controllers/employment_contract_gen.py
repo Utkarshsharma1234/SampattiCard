@@ -12,10 +12,11 @@ def create_employment_record_pdf(request: schemas.Contract, db:Session):
   
 
     current_time = datetime.now()
-
-        
+    field = db.query(models.worker_employer).filter(models.worker_employer.c.worker_number == request.workerNumber , models.worker_employer.c.employer_number == request.employerNumber).first()
+    
+    print(field.worker_number)
     static_dir = os.path.join(os.getcwd(), 'contracts')
-    pdf_path = os.path.join(static_dir, f"{request.workerNumber}_ER_{request.employerNumber}.pdf")
+    pdf_path = os.path.join(static_dir, f"{field.id}_ER.pdf")
 
     if not os.path.exists('contracts'):
         os.makedirs('contracts')

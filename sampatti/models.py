@@ -3,6 +3,7 @@ from sqlalchemy.orm import relationship
 from .database import Base
 
 worker_employer = Table('worker_employer', Base.metadata,
+    Column('id', String),
     Column('worker_number', ForeignKey('Domestic_Worker.workerNumber'), primary_key=True),
     Column('employer_number', ForeignKey('Employer.employerNumber'), primary_key=True),
     Column('salary_amount', Integer, default=0),
@@ -33,6 +34,7 @@ class Employer(Base):
 class TalkToAgentEmployer(Base):
     __tablename__ = "Talk_To_Agent"
     id = Column(String, primary_key=True)
+    date = Column(String)
     employerNumber = Column(Integer)
 
 
