@@ -181,7 +181,6 @@ def payment_link_generation(db : Session):
 
         update_statement = update(models.worker_employer).where(models.worker_employer.c.worker_number == item.worker_number).where(models.worker_employer.c.employer_number == item.employer_number).values(order_id= response["order_id"])
 
-
         db.execute(update_statement)
         db.commit()
         payment_ids.append(payment_session_id)
