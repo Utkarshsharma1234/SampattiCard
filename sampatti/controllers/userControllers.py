@@ -113,7 +113,17 @@ def create_talk_to_agent_employer(employerNumber : int, db:Session):
     db.commit()
     db.refresh(new_user)
     return new_user
+
     
+def check_existence(employerNumber : int, workerNumber : int, db : Session):
+
+    field = db.query(models.worker_employer).where(models.worker_employer.c.worker_number == workerNumber).where(models.worker_employer.c.employer_number == employerNumber).first()
+
+    if not field:
+        return {"message" : "VALID"}
+    else : 
+        return {"message" : "INVALID"}
+
 
 def create_contract(request : schemas.Contract, db):
 
