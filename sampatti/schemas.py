@@ -67,3 +67,4 @@ class Vendor(BaseModel):
     workerNumber : int
     name : str
     pan : str
+    employerNumber : int
