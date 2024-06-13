@@ -53,7 +53,7 @@ def fetch_vpa(workerNumber : int):
 
 # adding a vendor to the cashfree dashboard.
 
-def add_a_vendor(vpa : str, workerNumber : int, name : str, pan : str, db : Session):
+def add_a_vendor(vpa : str, workerNumber : int, name : str, pan : str, db : Session, employerNumber : int):
 
     uuid_value = uuid.uuid4().hex
     payload = {
@@ -90,7 +90,7 @@ def add_a_vendor(vpa : str, workerNumber : int, name : str, pan : str, db : Sess
 
     response_data = json.loads(response.text)
     vendor_id = response_data.get('vendor_id')
-    update_statement = update(models.worker_employer).where(models.worker_employer.c.worker_number == workerNumber).values(vendor_id= vendor_id)
+    update_statement = update(models.worker_employer).where(models.worker_employer.c.worker_number == workerNumber).where(models.worker_employer.c.employer_number == employerNumber).values(vendor_id= vendor_id)
 
     db.execute(update_statement)
     db.commit()
