@@ -97,6 +97,7 @@ def add_a_vendor(vpa : str, workerNumber : int, name : str, pan : str, db : Sess
         db.execute(update_statement)
         db.commit()
         print(response.text)
+        print(f"The vendor has been added successfully. Vendor Id : {vendor_id}")
         
         return uuid_value
     
@@ -104,7 +105,7 @@ def add_a_vendor(vpa : str, workerNumber : int, name : str, pan : str, db : Sess
         vendor_id = existing_worker.vendor_id
         print(vendor_id)
         update_statement = update(models.worker_employer).where(models.worker_employer.c.worker_number == workerNumber).where(models.worker_employer.c.employer_number == employerNumber).values(vendor_id= vendor_id)
-
+        print(f"This vendor already exists.")
         db.execute(update_statement)
         db.commit()
 
