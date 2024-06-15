@@ -85,7 +85,7 @@ def add_a_vendor(vpa : str, workerNumber : int, name : str, pan : str, db : Sess
 
     existing_worker = db.query(models.worker_employer).filter(models.worker_employer.c.worker_number == workerNumber).first()
 
-    if not existing_worker :
+    if existing_worker is None :
         url = "https://api.cashfree.com/pg/easy-split/vendors"
 
         response = requests.post(url, json=payload, headers=headers)
