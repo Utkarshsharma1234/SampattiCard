@@ -83,9 +83,13 @@ def add_a_vendor(vpa : str, workerNumber : int, name : str, pan : str, db : Sess
         "x-api-version" : "2023-08-01"
     }
 
-    existing_worker = db.query(models.worker_employer).filter(models.worker_employer.c.worker_number == workerNumber).first()
+    existing_worker_list = db.query(models.worker_employer).filter(models.worker_employer.c.worker_number == workerNumber).all()
 
-    existing_vendor_id = existing_worker.vendor_id
+    existing_vendor_id = None
+    for existing_worker in existing_worker_list:
+        if existing_worker.vendor_id:
+            existing_vendor_id = existing_worker.vendor_id
+            break
 
     if not existing_vendor_id :
         url = "https://api.cashfree.com/pg/easy-split/vendors"
