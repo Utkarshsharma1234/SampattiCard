@@ -85,7 +85,9 @@ def add_a_vendor(vpa : str, workerNumber : int, name : str, pan : str, db : Sess
 
     existing_worker = db.query(models.worker_employer).filter(models.worker_employer.c.worker_number == workerNumber).first()
 
-    if existing_worker is None :
+    existing_vendor_id = existing_worker.vendor_id
+
+    if not existing_vendor_id :
         url = "https://api.cashfree.com/pg/easy-split/vendors"
 
         response = requests.post(url, json=payload, headers=headers)
@@ -102,7 +104,7 @@ def add_a_vendor(vpa : str, workerNumber : int, name : str, pan : str, db : Sess
         return uuid_value
     
     else:
-        vendor_id = existing_worker.vendor_id
+        vendor_id = existing_vendor_id
         print(vendor_id)
         update_statement = update(models.worker_employer).where(models.worker_employer.c.worker_number == workerNumber).where(models.worker_employer.c.employer_number == employerNumber).values(vendor_id= vendor_id)
         print(f"This vendor already exists.")
