@@ -32,6 +32,10 @@ def check_existence(employerNumber : int, workerNumber : int, db : Session = Dep
 def check_names(pan_name : str, vpa_name : str):
     return userControllers.check_names(pan_name, vpa_name)
 
+@router.get("/check_worker")
+def check_worker(workerNumber : int):
+    return userControllers.check_worker(workerNumber)
+
 
 @router.post('/talk_to_agent/create')
 def create_talk_to_agent_employer(employerNumber : int, db : Session = Depends(get_db)):
