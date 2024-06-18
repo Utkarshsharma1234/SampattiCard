@@ -37,7 +37,7 @@ def create_employment_record_pdf(request: schemas.Contract, db:Session):
 
     # Employer Information
     c.setFont("Helvetica-Bold", 14)
-    c.drawString(x, y-50, F"Reference Number: {field.id}")
+    c.drawString(x, y-50, F"Reference Number: 0001-{field.id}")
     c.drawString(x, y-75, f"Employer Whatsapp Number: {request.employerNumber}")
     c.drawString(x, y-100, f"Domestic Worker ID: 010-{request.workerNumber}")
 

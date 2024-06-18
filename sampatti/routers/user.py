@@ -28,6 +28,10 @@ def create_domestic_worker(request : schemas.Domestic_Worker, db: Session = Depe
 def check_existence(employerNumber : int, workerNumber : int, db : Session = Depends(get_db)):
     return userControllers.check_existence(employerNumber, workerNumber,db)
 
+@router.get("/check_name_matching")
+def check_names(pan_name : str, vpa_name : str):
+    return userControllers.check_names(pan_name, vpa_name)
+
 
 @router.post('/talk_to_agent/create')
 def create_talk_to_agent_employer(employerNumber : int, db : Session = Depends(get_db)):

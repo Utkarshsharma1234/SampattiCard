@@ -1,15 +1,13 @@
 from datetime import datetime
-from fastapi import HTTPException, status
+from fastapi import HTTPException
 from sqlalchemy import update
-import uuid, random, string
+import uuid, random, string, hashlib, difflib, json, re
 from .. import models
 from ..import schemas
-from ..hashing import Hash
-from sqlalchemy.orm import Session, joinedload
-import hashlib
-import json
-from fastapi.responses import JSONResponse
+from sqlalchemy.orm import Session
 
+
+# utility functions
 
 def generate_unique_id(length=8):
 
@@ -18,6 +16,15 @@ def generate_unique_id(length=8):
     if len(letters_only) < length:
         letters_only += ''.join(random.choices(string.ascii_letters, k=length - len(letters_only)))
     return letters_only
+
+def fuzzy_match_score(str1, str2):
+    return difflib.SequenceMatcher(None, str1, str2).ratio()
+
+
+def exact_match_case_insensitive(str1, str2):
+    words1 = set(re.findall(r'\b\w+\b', str1.lower()))
+    words2 = set(re.findall(r'\b\w+\b', str2.lower()))
+    return not words1.isdisjoint(words2)
 
 # creating the employer
 def create_employer(request : schemas.Employer, db: Session):
@@ -123,7 +130,35 @@ def check_existence(employerNumber : int, workerNumber : int, db : Session):
         return {"message" : "VALID"}
     else : 
         return {"message" : "INVALID"}
+    
 
+def check_worker(workerNumber : int, db : Session):
+
+    field = db.query(models.Domestic_Worker).where(models.Domestic_Worker.workerNumber == workerNumber).first()
+
+    if not field :
+        return {"message" : "INVALID"}
+
+    return {
+        "VPA" : field.upi_id,
+        "PAN" : field.panNumber,
+        "NAME" : field.name
+    }
+
+def check_names(pan_name : str,vpa_name : str):
+    str1 = pan_name
+    str2 = vpa_name
+
+    exact_match = exact_match_case_insensitive(str1, str2)
+    fuzzy_score = fuzzy_match_score(str1, str2)
+
+    if(exact_match == True and fuzzy_score*100 >= 50):
+        return {"message" : "VALID"}
+    
+    else:
+        return {"message" : "INVALID"}
+    # print(f"At least one exact match (case insensitive): {exact_match}")
+    # print(f"Fuzzy match score: {fuzzy_score}")
 
 def create_contract(request : schemas.Contract, db):
 
