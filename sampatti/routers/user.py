@@ -33,8 +33,8 @@ def check_names(pan_name : str, vpa_name : str):
     return userControllers.check_names(pan_name, vpa_name)
 
 @router.get("/check_worker")
-def check_worker(workerNumber : int):
-    return userControllers.check_worker(workerNumber)
+def check_worker(workerNumber : int, db : Session = Depends(get_db)):
+    return userControllers.check_worker(workerNumber, db)
 
 
 @router.post('/talk_to_agent/create')
