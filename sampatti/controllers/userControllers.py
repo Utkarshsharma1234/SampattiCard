@@ -146,19 +146,20 @@ def check_worker(workerNumber : int, db : Session):
     }
 
 def check_names(pan_name : str,vpa_name : str):
-    str1 = pan_name
-    str2 = vpa_name
+    str1 = pan_name.lower()
+    str2 = vpa_name.lower()
 
     exact_match = exact_match_case_insensitive(str1, str2)
     fuzzy_score = fuzzy_match_score(str1, str2)
 
-    if(exact_match == True and fuzzy_score*100 >= 50):
+    print(f"At least one exact match (case insensitive): {exact_match}")
+    print(f"Fuzzy match score: {fuzzy_score}")
+
+    if(exact_match == True and fuzzy_score*100 >= 40):
         return {"message" : "VALID"}
     
     else:
         return {"message" : "INVALID"}
-    # print(f"At least one exact match (case insensitive): {exact_match}")
-    # print(f"Fuzzy match score: {fuzzy_score}")
 
 def create_contract(request : schemas.Contract, db):
 
