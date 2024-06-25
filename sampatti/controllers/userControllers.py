@@ -169,8 +169,9 @@ def number_regex(numberString : str):
     cleaned_text = re.sub(pattern, '', numberString)
 
     if len(cleaned_text) >= 10:
-        return int(cleaned_text[-10:])
-    return None
+        return {"mobileNumber" : int(cleaned_text[-10:])}
+    
+    return {"mobileNumber" : "INVALID"}
 
 
 def create_contract(request : schemas.Contract, db):
