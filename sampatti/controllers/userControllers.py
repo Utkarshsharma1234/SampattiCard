@@ -162,11 +162,11 @@ def check_names(pan_name : str,vpa_name : str):
         return {"message" : "INVALID"}
 
 
-def number_regex(workerNumber : str):
+def number_regex(numberString : str):
 
     pattern = r'\+91[\s-]*|\D'
 
-    cleaned_text = re.sub(pattern, '', workerNumber)
+    cleaned_text = re.sub(pattern, '', numberString)
 
     if len(cleaned_text) >= 10:
         return int(cleaned_text[-10:])

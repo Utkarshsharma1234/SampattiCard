@@ -37,13 +37,13 @@ def check_worker(workerNumber : int, db : Session = Depends(get_db)):
     return userControllers.check_worker(workerNumber, db)
 
 @router.get("/get_number")
-def number_regex(workerNumber : str):
-    return userControllers.number_regex(workerNumber)
+def number_regex(numberString : str):
+    return userControllers.number_regex(numberString)
 
 
 @router.post('/talk_to_agent/create')
-def create_talk_to_agent_employer(employerNumber : int, db : Session = Depends(get_db)):
-    return userControllers.create_talk_to_agent_employer(employerNumber, db)
+def create_talk_to_agent_employer(employerNumber : int, category : str, db : Session = Depends(get_db)):
+    return userControllers.create_talk_to_agent_employer(employerNumber, db, category)
 
 @router.put('/domestic_worker/update')
 def update_worker(oldNumber : int, newNumber: int, db : Session = Depends(get_db)):
