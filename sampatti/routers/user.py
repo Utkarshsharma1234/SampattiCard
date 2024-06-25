@@ -36,6 +36,10 @@ def check_names(pan_name : str, vpa_name : str):
 def check_worker(workerNumber : int, db : Session = Depends(get_db)):
     return userControllers.check_worker(workerNumber, db)
 
+@router.get("/get_number")
+def number_regex(workerNumber : str):
+    return userControllers.number_regex(workerNumber)
+
 
 @router.post('/talk_to_agent/create')
 def create_talk_to_agent_employer(employerNumber : int, db : Session = Depends(get_db)):

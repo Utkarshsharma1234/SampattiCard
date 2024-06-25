@@ -110,12 +110,12 @@ def insert_salary(request : schemas.Salary, db : Session):
 
 
 
-def create_talk_to_agent_employer(employerNumber : int, db:Session):
+def create_talk_to_agent_employer(employerNumber : int, category : str, db:Session):
 
     current_date = datetime.now().date()
 
     unique_id = generate_unique_id()
-    new_user = models.TalkToAgentEmployer(id = unique_id, employerNumber = employerNumber, date=f"{current_date}")
+    new_user = models.TalkToAgentEmployer(id = unique_id, employerNumber = employerNumber, date=f"{current_date}", category = category)
     db.add(new_user)
     db.commit()
     db.refresh(new_user)
@@ -160,6 +160,18 @@ def check_names(pan_name : str,vpa_name : str):
     
     else:
         return {"message" : "INVALID"}
+
+
+def number_regex(workerNumber : str):
+
+    pattern = r'\+91[\s-]*|\D'
+
+    cleaned_text = re.sub(pattern, '', workerNumber)
+
+    if len(cleaned_text) >= 10:
+        return int(cleaned_text[-10:])
+    return None
+
 
 def create_contract(request : schemas.Contract, db):
 

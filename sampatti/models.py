@@ -36,6 +36,7 @@ class TalkToAgentEmployer(Base):
     id = Column(String, primary_key=True)
     date = Column(String)
     employerNumber = Column(Integer)
+    category = Column(String)
 
 
 class Contract(Base) :
