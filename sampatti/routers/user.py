@@ -40,6 +40,10 @@ def check_worker(workerNumber : int, db : Session = Depends(get_db)):
 def number_regex(numberString : str):
     return userControllers.number_regex(numberString)
 
+@router.get("/extract_salary")
+def extract_salary(salary_amount : str):
+    return userControllers.extract_salary(salary_amount)
+
 
 @router.post('/talk_to_agent/create')
 def create_talk_to_agent_employer(employerNumber : int, category : str, db : Session = Depends(get_db)):

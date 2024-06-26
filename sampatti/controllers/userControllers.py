@@ -174,26 +174,11 @@ def number_regex(numberString : str):
     return {"mobileNumber" : "INVALID"}
 
 
-def create_contract(request : schemas.Contract, db):
+def extract_salary(salary_amount : str):
 
-    my_object = {
-        "employer_number" : request.employer_number,
-        "worker_number" : request.worker_number,
-        "message" : request.message,
-        "timestamp" : request.timestamp,
-    }
+    match = re.search(r'\b\d+\b', salary_amount)
+    if match:
+        return {"extracted_salary" : int(match.group())}
+    
+    return {"extracted_salary" : "INVALID"}
 
-    json_string = json.dumps(my_object, sort_keys=True)
-
-    hash_object = hashlib.sha256()
-
-    hash_object.update(json_string.encode('utf-8'))
-
-    hashed_result = hash_object.hexdigest()
-
-    contract = models.Contract(employer_number = request.employer_number, worker_number = request.worker_number, message = request.message, timestamp = request.timestamp, hashedMessage = hashed_result)
-
-    db.add(contract)
-    db.commit()
-    db.refresh(contract)
-    return contract
