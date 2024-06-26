@@ -176,7 +176,7 @@ def number_regex(numberString : str):
 
 def extract_salary(salary_amount : str):
 
-    match = re.search(r'\b\d+\b', salary_amount)
+    match = re.search(r'\d+', salary_amount)
     if match:
         return {"extracted_salary" : int(match.group())}
     
