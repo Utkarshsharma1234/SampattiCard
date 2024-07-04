@@ -40,63 +40,57 @@ def generate_unique_id(length=8):
     return letters_only
 
 
-# def fetch_vpa(workerNumber : int):
-#     Cashfree_Verification.XClientId = verification_id
-#     Cashfree_Verification.XClientSecret = verification_secret
-#     Cashfree_Verification.XEnvironment = Cashfree_Verification.XProduction
-#     uuid_value = uuid.uuid4().hex
-    
-#     user_info = UpiMobileRequestSchema(mobile_number= f"{workerNumber}", verification_id = uuid_value)
-
-#     api_response = None
-#     try:
-#         api_response = Cashfree_Verification().vrs_upi_mobile_verification(user_info, None)
-#         if not api_response or not api_response.data:
-#             raise HTTPException(status_code=400, detail="Bad request: No response from API")
-        
-#     except Exception as e:
-#         # Log the exception and raise a 400 HTTP exception with the error message
-#         print(e)
-#         raise HTTPException(status_code=400, detail=f"Bad request: No response from API")
-    
-#     response = dict(api_response.data)
-#     return response
-
 def fetch_vpa(workerNumber : int):
+    Cashfree_Verification.XClientId = verification_id
+    Cashfree_Verification.XClientSecret = verification_secret
+    Cashfree_Verification.XEnvironment = Cashfree_Verification.XProduction
+    uuid_value = uuid.uuid4().hex
     
-    uuid_val = generate_unique_id()
-    url = "https://api.cashfree.com/verification/upi/mobile"
+    user_info = UpiMobileRequestSchema(mobile_number= f"{workerNumber}", verification_id = uuid_value)
 
-    payload = {
-        "verification_id": uuid_val,
-        "mobile_number": f"{workerNumber}",
-        "additional_vpas": True
-    }
-    headers = {
-        "accept": "application/json",
-        "content-type": "application/json",
-        "x-client-id": verification_id,
-        "x-client-secret": verification_secret
-    }
-
-    response = requests.post(url, json=payload, headers=headers)
-
-    print(response.text)
-    response_data = json.loads(response.text)
-    vpa = response_data.get('vpa')
-    additional_vpas = response_data.get('additional_vpas')
-    additional_vpas.append(vpa)
-    # ct = 2
-    # print(additional_vpas)
-    # for vpa in additional_vpas:
-    #     vpa_array.append({f"VPA {ct}" : vpa})
-    #     ct += 1
+    api_response = None
+    try:
+        api_response = Cashfree_Verification().vrs_upi_mobile_verification(user_info, None)
+        if not api_response or not api_response.data:
+            raise HTTPException(status_code=400, detail="Bad request: No response from API")
+        
+    except Exception as e:
+        # Log the exception and raise a 400 HTTP exception with the error message
+        print(e)
+        raise HTTPException(status_code=400, detail=f"Bad request: No response from API")
     
-    if len(additional_vpas) == 0:
-        return {"NO_VPA_MESSAGE" : "No VPA is associated with this number."}
+    response = dict(api_response.data)
+    return response
+
+# def fetch_vpa(workerNumber : int):
     
-    else:
-        return {"VPAs" : additional_vpas}
+#     uuid_val = generate_unique_id()
+#     url = "https://api.cashfree.com/verification/upi/mobile"
+
+#     payload = {
+#         "verification_id": uuid_val,
+#         "mobile_number": f"{workerNumber}",
+#         "additional_vpas": True
+#     }
+#     headers = {
+#         "accept": "application/json",
+#         "content-type": "application/json",
+#         "x-client-id": verification_id,
+#         "x-client-secret": verification_secret
+#     }
+
+#     response = requests.post(url, json=payload, headers=headers)
+
+#     print(response.text)
+#     response_data = json.loads(response.text)
+#     vpa = response_data.get('vpa')
+#     additional_vpas = response_data.get('additional_vpas')
+#     additional_vpas.append(vpa)
+#     if len(additional_vpas) == 0:
+#         return {"NO_VPA_MESSAGE" : "No VPA is associated with this number."}
+    
+#     else:
+#         return {"VPAs" : additional_vpas}
 
 # adding a vendor to the cashfree dashboard.
 
