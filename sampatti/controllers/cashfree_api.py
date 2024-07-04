@@ -83,19 +83,20 @@ def fetch_vpa(workerNumber : int):
 
     print(response.text)
     response_data = json.loads(response.text)
-    vpa_array = []
-    vpa_array.append({"VPA 1" : response_data.get('vpa')})
-    additiona_vpas = response_data.get('additional_vpas')
-    ct = 2
-    for vpa in additiona_vpas:
-        vpa_array.append({f"VPA {ct}" : vpa})
-        ct += 1
+    vpa = response_data.get('vpa')
+    additional_vpas = response_data.get('additional_vpas')
+    additional_vpas.append(vpa)
+    # ct = 2
+    # print(additional_vpas)
+    # for vpa in additional_vpas:
+    #     vpa_array.append({f"VPA {ct}" : vpa})
+    #     ct += 1
     
-    if len(vpa_array == 0):
+    if len(additional_vpas) == 0:
         return {"NO_VPA_MESSAGE" : "No VPA is associated with this number."}
     
     else:
-        return {"VPAs" : vpa_array}
+        return {"VPAs" : additional_vpas}
 
 # adding a vendor to the cashfree dashboard.
 
