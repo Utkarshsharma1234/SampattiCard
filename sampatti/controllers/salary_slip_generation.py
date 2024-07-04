@@ -41,7 +41,7 @@ def generate_salary_slip(workerNumber, db:Session) :
     size = len(text)
     c.drawString(w/2 - size*4.5, h-80, text=text)
 
-    x = 50
+    x = 30
     y = h - 110
 
     c.setFont("Helvetica", 14)
@@ -62,8 +62,8 @@ def generate_salary_slip(workerNumber, db:Session) :
 
     worker_data = [
         [f"Name of the Employee : {worker.name}", "PF Number : NA"],
-        ["Nature of Work : Domestic Help", "Account Number : 2222222222222222"],
-        ["Bank Name : HDFC Bank", "IFSC Code : NA"],
+        ["Nature of Work : Domestic Help", "Account Number : NA"],
+        ["Bank Name : NA", "IFSC Code : NA"],
         ["ESI Number : NA", f"UPI ID : {worker.upi_id}"]
     ]
 
@@ -96,7 +96,7 @@ def generate_salary_slip(workerNumber, db:Session) :
         order_id = transaction.order_id
         status = check_order_status(order_id=order_id)
         if status == "PAID":
-            single_row = [ct, transaction.employer_number, "UPI", transaction.order_id, transaction.salary_amount, "Variable Pay"]
+            single_row = [ct, transaction.employer_number, "UPI", transaction.order_id, transaction.salary_amount, 0]
             receipt_data.append(single_row)
             rows += 1
             ct += 1
@@ -141,7 +141,7 @@ The money has been debited in the corresponding bank account."""
 
     y = 110
     for line in lines:
-        c.drawString(x, y, line)
+        c.drawString(x+20, y, line)
         y -= 10
 
     y -= 10
@@ -154,15 +154,15 @@ employer for the worker for whom salary record is generated."""
 
     lines = declaration.split('\n')
     for line in lines:
-        c.drawString(x, y, line)
+        c.drawString(x+20, y, line)
         y -= 10
 
 
     c.setFont("Helvetica", 10)
     c.rect(0,0,w,30, fill=True)
     c.setFillColorRGB(1,1,1)
-    c.drawString(x, 12.5, "Phone : +91 86603 52558")
-    c.drawString(x+ 150, 12.5, "website : www.sampatticard.in          support : vrashali@sampatticard.in")
+    c.drawString(x+20, 12.5, "Phone : +91 86603 52558")
+    c.drawString(x+ 170, 12.5, "website : www.sampatticard.in          support : vrashali@sampatticard.in")
 
     c.showPage()
     c.save()
