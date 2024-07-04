@@ -70,7 +70,7 @@ def generate_salary_slip_endpoint(workerNumber : int, db: Session = Depends(get_
 
     static_pdf_path = os.path.join(os.getcwd(), 'static', f"{worker.id}_SS_{current_month}_{current_year}.pdf")
 
-    return FileResponse(static_pdf_path, media_type='application/pdf', filename=f"{worker.id}_SS_{current_month}_{current_year}.pdf")
+    return FileResponse(static_pdf_path, media_type='application/pdf', filename=f"{workerNumber}_SS_{current_month}_{current_year}.pdf")
 
 
 @router.post("/contract")
