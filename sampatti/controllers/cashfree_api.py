@@ -86,25 +86,24 @@ def fetch_multiple_vpa(workerNumber : int):
     vpa = response_data.get('vpa')
     additional_vpas = response_data.get('additional_vpas')
     name_at_bank = response_data.get('name_at_bank')
-    if additional_vpas is None:
+    if name_at_bank is None:
+        name_at_bank = "INVALID"
+    if len(additional_vpas) == 0:
         additional_vpas = []
     additional_vpas.append(vpa)
-    if len(additional_vpas) == 0:
-        return {"NO_VPA_MESSAGE" : "No VPA is associated with this number."}
-    
-    else:
-        multiple_vpa = []
-        for vpa in additional_vpas:
-            record = {
-                "text": vpa,
-                "postback": f"data_vpa_upi_id={vpa}"
-            }
-            multiple_vpa.append(record)
-        
-        return {
-            "name_at_bank" : name_at_bank,
-            "vpa_array" : multiple_vpa
+
+    multiple_vpa = []
+    for vpa in additional_vpas:
+        record = {
+            "text": vpa,
+            "postback": f"data_vpa_upi_id={vpa}"
         }
+        multiple_vpa.append(record)
+    
+    return {
+        "name_at_bank" : name_at_bank,
+        "vpa_array" : multiple_vpa
+    }
 # adding a vendor to the cashfree dashboard.
 
 def add_a_vendor(vpa : str, workerNumber : int, name : str, pan : str, db : Session, employerNumber : int):
