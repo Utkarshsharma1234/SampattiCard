@@ -16,6 +16,11 @@ router = APIRouter(
 def fetch_vpa(workerNumber : int):
     return cashfree_api.fetch_vpa(workerNumber=workerNumber)
 
+@router.get("/fetch_multiple_vpa/{workerNumber}")
+def fetch_multiple_vpa(workerNumber : int):
+    return cashfree_api.fetch_multiple_vpa(workerNumber=workerNumber)
+
+
 @router.get("/payment_link")
 def payment_link_generation(db : Session = Depends(get_db)):
     return cashfree_api.payment_link_generation(db)

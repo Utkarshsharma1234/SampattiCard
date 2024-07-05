@@ -62,36 +62,45 @@ def fetch_vpa(workerNumber : int):
     response = dict(api_response.data)
     return response
 
-# def fetch_vpa(workerNumber : int):
+def fetch_multiple_vpa(workerNumber : int):
     
-#     uuid_val = generate_unique_id()
-#     url = "https://api.cashfree.com/verification/upi/mobile"
+    uuid_val = generate_unique_id()
+    url = "https://api.cashfree.com/verification/upi/mobile"
 
-#     payload = {
-#         "verification_id": uuid_val,
-#         "mobile_number": f"{workerNumber}",
-#         "additional_vpas": True
-#     }
-#     headers = {
-#         "accept": "application/json",
-#         "content-type": "application/json",
-#         "x-client-id": verification_id,
-#         "x-client-secret": verification_secret
-#     }
+    payload = {
+        "verification_id": uuid_val,
+        "mobile_number": f"{workerNumber}",
+        "additional_vpas": True
+    }
+    headers = {
+        "accept": "application/json",
+        "content-type": "application/json",
+        "x-client-id": verification_id,
+        "x-client-secret": verification_secret
+    }
 
-#     response = requests.post(url, json=payload, headers=headers)
+    response = requests.post(url, json=payload, headers=headers)
 
-#     print(response.text)
-#     response_data = json.loads(response.text)
-#     vpa = response_data.get('vpa')
-#     additional_vpas = response_data.get('additional_vpas')
-#     additional_vpas.append(vpa)
-#     if len(additional_vpas) == 0:
-#         return {"NO_VPA_MESSAGE" : "No VPA is associated with this number."}
+    print(response.text)
+    response_data = json.loads(response.text)
+    vpa = response_data.get('vpa')
+    additional_vpas = response_data.get('additional_vpas')
+    if additional_vpas is None:
+        additional_vpas = []
+    additional_vpas.append(vpa)
+    if len(additional_vpas) == 0:
+        return {"NO_VPA_MESSAGE" : "No VPA is associated with this number."}
     
-#     else:
-#         return {"VPAs" : additional_vpas}
-
+    else:
+        multiple_vpa = []
+        for vpa in additional_vpas:
+            record = {
+                "text": vpa,
+                "postback": f"data_vpa_upi_id={vpa}"
+            }
+            multiple_vpa.append(record)
+        
+        return multiple_vpa
 # adding a vendor to the cashfree dashboard.
 
 def add_a_vendor(vpa : str, workerNumber : int, name : str, pan : str, db : Session, employerNumber : int):
