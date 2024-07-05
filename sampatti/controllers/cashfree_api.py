@@ -85,6 +85,7 @@ def fetch_multiple_vpa(workerNumber : int):
     response_data = json.loads(response.text)
     vpa = response_data.get('vpa')
     additional_vpas = response_data.get('additional_vpas')
+    name_at_bank = response_data.get('name_at_bank')
     if additional_vpas is None:
         additional_vpas = []
     additional_vpas.append(vpa)
@@ -100,7 +101,10 @@ def fetch_multiple_vpa(workerNumber : int):
             }
             multiple_vpa.append(record)
         
-        return multiple_vpa
+        return {
+            "name_at_bank" : name_at_bank,
+            "vpa_array" : multiple_vpa
+        }
 # adding a vendor to the cashfree dashboard.
 
 def add_a_vendor(vpa : str, workerNumber : int, name : str, pan : str, db : Session, employerNumber : int):
