@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session
 from ..controllers import userControllers, salary_slip_generation
 from ..controllers import employment_contract_gen
 from datetime import datetime
-from ..controllers import whatsapp_message
+from ..controllers import whatsapp_message, talk_to_agent_excel_file
 
 
 router = APIRouter(
@@ -91,3 +91,7 @@ def contract_generation(request : schemas.Contract, db : Session = Depends(get_d
 @router.post("/generate_contract")
 def generate(workerNumber: int, employerNumber: int, db : Session = Depends(get_db)):
     return whatsapp_message.generate(workerNumber, employerNumber, db)
+
+@router.get('/generate_sheet')
+def generate_sheet():
+    return talk_to_agent_excel_file.upload_data_to_google_sheets()
