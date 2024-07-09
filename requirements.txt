@@ -20,3 +20,6 @@ sentence-transformers
 cashfree_pg
 cashfree_verification
 python-decouple
+pandas 
+gspread 
+oauth2client
