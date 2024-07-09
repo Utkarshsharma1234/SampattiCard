@@ -42,35 +42,29 @@ def create_employer(request : schemas.Employer, db: Session):
         return new_user
     
     else:
-        {"message" : "Employer already Exists."}
+        {"message" : "EMPLOYER_EXISTS"}
 
 
 # creating a domestic worker
 def create_domestic_worker(request : schemas.Domestic_Worker, db: Session):
-    worker_name = request.name
-    worker_email = request.email
-    workerNumber = request.workerNumber
-    employerNumber = request.employerNumber
-    worker_pan = request.panNumber
-    worker_upi = request.upi_id
 
-    employer = db.query(models.Employer).filter(models.Employer.employerNumber == employerNumber).first()
+    employer = db.query(models.Employer).filter(models.Employer.employerNumber == request.employerNumber).first()
 
     if not employer:
         raise HTTPException(status_code=400, detail="The employer is not registered. You must register the employer first.")
 
-    existing_worker = db.query(models.Domestic_Worker).filter(models.Domestic_Worker.workerNumber == workerNumber).first()
+    existing_worker = db.query(models.Domestic_Worker).filter(models.Domestic_Worker.workerNumber == request.workerNumber).first()
     
     if not existing_worker:
         unique_id = generate_unique_id()
-        new_worker = models.Domestic_Worker(id=unique_id, name = worker_name, email = worker_email, workerNumber = workerNumber, panNumber = worker_pan, upi_id = worker_upi)
+        new_worker = models.Domestic_Worker(id=unique_id, name = request.name, email = request.email, workerNumber = request.workerNumber, panNumber = request.panNumber, upi_id = request.upi_id, accountNumber = None, ifsc = None)
         new_worker.employers.append(employer)
         db.add(new_worker)
         db.commit()
         db.refresh(new_worker)
 
         unique_id2 = generate_unique_id()
-        update_statement = update(models.worker_employer).where(models.worker_employer.c.worker_number == workerNumber).where(models.worker_employer.c.employer_number == employer.employerNumber).values(id=unique_id2)
+        update_statement = update(models.worker_employer).where(models.worker_employer.c.worker_number == request.workerNumber).where(models.worker_employer.c.employer_number == employer.employerNumber).values(id=unique_id2)
         db.execute(update_statement)
         db.commit()
         return new_worker
@@ -81,10 +75,30 @@ def create_domestic_worker(request : schemas.Domestic_Worker, db: Session):
         db.refresh(existing_worker)
 
         unique_id2 = generate_unique_id()
-        update_statement = update(models.worker_employer).where(models.worker_employer.c.worker_number == workerNumber).where(models.worker_employer.c.employer_number == employer.employerNumber).values(id=unique_id2)
+        update_statement = update(models.worker_employer).where(models.worker_employer.c.worker_number == request.workerNumber).where(models.worker_employer.c.employer_number == employer.employerNumber).values(id=unique_id2)
         db.execute(update_statement)
         db.commit()
         return existing_worker
+
+
+# creating the worker from account number and customer care number
+
+def create_worker_account_number(request : schemas.Domestic_Worker, db: Session):
+
+    existing_worker = db.query(models.Domestic_Worker).filter(models.Domestic_Worker.workerNumber == request.workerNumber).first()
+   
+    if not existing_worker:
+
+        unique_id = generate_unique_id()
+        new_worker = models.Domestic_Worker(id=unique_id, name = request.name, email = request.email, workerNumber = request.workerNumber, panNumber = request.panNumber, upi_id = None, accountNumber = request.accountNumber, ifsc = request.ifsc)
+
+        db.add(new_worker)
+        db.commit()
+        db.refresh(new_worker)
+        return new_worker
+    
+    else:
+        return {"message" : "WORKER_ALREADY_ONBOARDED"}
     
 
 def update_worker(oldNumber : int, newNumber : int, db : Session):
@@ -139,11 +153,21 @@ def check_worker(workerNumber : int, db : Session):
     if not field :
         return {"message" : "INVALID"}
 
-    return {
-        "VPA" : field.upi_id,
-        "PAN" : field.panNumber,
-        "NAME" : field.name
-    }
+    else:
+        if field.accountNumber is None:
+            return {
+                "VPA" : field.upi_id,
+                "PAN" : field.panNumber,
+                "NAME" : field.name
+            }
+
+        else:
+            return {
+                "NAME" : field.name,
+                "ACCOUNT_NUMBER" : field.accountNumber,
+                "IFSC" : field.ifsc,
+                "PAN" : field.panNumber
+            } 
 
 def check_names(pan_name : str,vpa_name : str):
     str1 = pan_name.lower()

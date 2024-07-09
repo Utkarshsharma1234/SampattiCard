@@ -18,6 +18,7 @@ from sqlalchemy import update
 from dotenv import load_dotenv
 from sqlalchemy.orm import Session
 from sqlalchemy import update
+from .. import schemas
 
 load_dotenv()
 verification_id= os.environ.get('CASHFREE_VERIFICATION_ID')
@@ -62,6 +63,7 @@ def fetch_vpa(workerNumber : int):
     response = dict(api_response.data)
     return response
 
+
 def fetch_multiple_vpa(workerNumber : int):
     
     uuid_val = generate_unique_id()
@@ -104,30 +106,48 @@ def fetch_multiple_vpa(workerNumber : int):
         "name_at_bank" : name_at_bank,
         "vpa_array" : multiple_vpa
     }
+
+
 # adding a vendor to the cashfree dashboard.
 
-def add_a_vendor(vpa : str, workerNumber : int, name : str, pan : str, db : Session, employerNumber : int):
+def add_a_vendor(request : schemas.Vendor, db: Session):
+
+    if request.vpa == "None":
+        request.vpa = None
+
+    elif request.accountNumber == "None":
+        request.accountNumber = None
 
     uuid_value = uuid.uuid4().hex
     payload = {
     "vendor_id": uuid_value,
     "status": "ACTIVE",
-    "name": name,
+    "name": request.name,
     "email": "johndoe@gmail.com",
-    "phone": f"{workerNumber}",
+    "phone": f"{request.workerNumber}",
     "verify_account": True,
     "dashboard_access": False,
     "schedule_option": 1,
-    "upi": {
-      "vpa": vpa,
-  	  "account_holder": name
-    },
     "kyc_details": {
         "account_type": "INDIVIDUAL",
         "business_type": "Education",
-        "pan": pan
+        "pan": request.pan
     }
 }
+    
+    if request.vpa:
+        payload["upi"] = {
+            "vpa": request.vpa,
+            "account_holder": request.name
+        }
+
+
+    elif request.accountNumber:
+        payload["bank"] = {
+            "account_number": request.accountNumber,
+            "account_holder": request.name,
+            "ifsc": request.ifsc
+        }
 
     headers = {
         "X-Client-Id" : pg_id,
@@ -136,7 +156,7 @@ def add_a_vendor(vpa : str, workerNumber : int, name : str, pan : str, db : Sess
         "x-api-version" : "2023-08-01"
     }
 
-    existing_worker_list = db.query(models.worker_employer).filter(models.worker_employer.c.worker_number == workerNumber).all()
+    existing_worker_list = db.query(models.worker_employer).filter(models.worker_employer.c.worker_number == request.workerNumber).all()
 
     existing_vendor_id = None
     for existing_worker in existing_worker_list:
@@ -151,7 +171,7 @@ def add_a_vendor(vpa : str, workerNumber : int, name : str, pan : str, db : Sess
 
         response_data = json.loads(response.text)
         vendor_id = response_data.get('vendor_id')
-        update_statement = update(models.worker_employer).where(models.worker_employer.c.worker_number == workerNumber).where(models.worker_employer.c.employer_number == employerNumber).values(vendor_id= vendor_id)
+        update_statement = update(models.worker_employer).where(models.worker_employer.c.worker_number == request.workerNumber).where(models.worker_employer.c.employer_number == request.employerNumber).values(vendor_id= vendor_id)
 
         db.execute(update_statement)
         db.commit()
@@ -163,7 +183,7 @@ def add_a_vendor(vpa : str, workerNumber : int, name : str, pan : str, db : Sess
     else:
         vendor_id = existing_vendor_id
         print(vendor_id)
-        update_statement = update(models.worker_employer).where(models.worker_employer.c.worker_number == workerNumber).where(models.worker_employer.c.employer_number == employerNumber).values(vendor_id= vendor_id)
+        update_statement = update(models.worker_employer).where(models.worker_employer.c.worker_number == request.workerNumber).where(models.worker_employer.c.employer_number == request.employerNumber).values(vendor_id= vendor_id)
         print(f"This vendor already exists.")
         db.execute(update_statement)
         db.commit()
@@ -188,6 +208,7 @@ def check_order_status(order_id):
     order_status = response_data.get('order_status')
     return order_status
     
+# pan verification
 
 def pan_verification(pan : str, name : str):
     Cashfree_Verification.XClientId = verification_id
@@ -209,6 +230,7 @@ def pan_verification(pan : str, name : str):
     return response
 
 
+# payment link generation
 
 def payment_link_generation(db : Session):
     Cashfree.XClientId = pg_id
@@ -247,13 +269,7 @@ def payment_link_generation(db : Session):
 
     return payment_ids
 
-
-def custom_json_encoder(obj):
-    if obj is None:
-        return "null"
-    else:
-        raise TypeError(f"Object of type '{type(obj).__name__}' is not JSON serializable")
-
+# unsettled balance
 
 def unsettled_balance(db : Session):
 

@@ -8,6 +8,8 @@ class Domestic_Worker(BaseModel):
     employerNumber : int
     panNumber : str
     upi_id : str
+    accountNumber : str
+    ifsc : str
     class Config:
         from_attributes = True
 
@@ -67,4 +69,6 @@ class Vendor(BaseModel):
     workerNumber : int
     name : str
     pan : str
+    accountNumber : str
+    ifsc : str
     employerNumber : int

@@ -17,11 +17,13 @@ class Domestic_Worker(Base):
 
     __tablename__ = "Domestic_Worker"
     id = Column(String, primary_key=True)
-    name = Column(String, nullable=True)
+    name = Column(String)
     email = Column(String, nullable=True)
     workerNumber = Column(Integer)
     panNumber = Column(String)
-    upi_id = Column(String)
+    upi_id = Column(String, nullable=True)
+    accountNumber = Column(String, nullable=True)
+    ifsc = Column(String, nullable=True)
     employers = relationship("Employer", secondary="worker_employer", back_populates='workers') 
 
 

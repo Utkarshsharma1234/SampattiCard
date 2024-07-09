@@ -31,7 +31,7 @@ def check_order_status(orderId : str):
 
 @router.post("/add_a_vendor")
 def add_a_vendor(request : schemas.Vendor, db : Session = Depends(get_db)):
-    return cashfree_api.add_a_vendor(request.vpa, request.workerNumber, request.name, request.pan, db, request.employerNumber)
+    return cashfree_api.add_a_vendor(request, db)
 
 @router.get("/pan_verification")
 def pan_verification(pan : str, name : str):

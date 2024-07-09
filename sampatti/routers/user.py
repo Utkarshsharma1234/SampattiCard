@@ -24,6 +24,10 @@ def create_employer(request : schemas.Employer, db : Session = Depends(get_db)):
 def create_domestic_worker(request : schemas.Domestic_Worker, db: Session = Depends(get_db)):
     return userControllers.create_domestic_worker(request, db)
 
+@router.post('domestic_worker/create/account_number')
+def create_worker_account_number(request : schemas.Domestic_Worker, db: Session = Depends(get_db)):
+    return userControllers.create_worker_account_number(request,db)
+
 @router.get("/check_existence")
 def check_existence(employerNumber : int, workerNumber : int, db : Session = Depends(get_db)):
     return userControllers.check_existence(employerNumber, workerNumber,db)
