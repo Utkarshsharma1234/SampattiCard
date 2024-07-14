@@ -149,6 +149,7 @@ def add_a_vendor(request : schemas.Vendor, db: Session):
             "ifsc": request.ifsc
         }
 
+    print(payload)
     headers = {
         "X-Client-Id" : pg_id,
         "X-Client-Secret" : pg_secret,
