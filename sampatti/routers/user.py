@@ -53,28 +53,36 @@ def extract_salary(salary_amount : str):
 def create_talk_to_agent_employer(employerNumber : int, category : str, db : Session = Depends(get_db)):
     return userControllers.create_talk_to_agent_employer(employerNumber, category, db)
 
+@router.post('/explain_worker/create')
+def explain_worker(employerNumber : int, workerNumber : int , db : Session = Depends(get_db)):
+    return userControllers.explain_worker(db, workerNumber, employerNumber)
+
 @router.put('/domestic_worker/update')
 def update_worker(oldNumber : int, newNumber: int, db : Session = Depends(get_db)):
     return userControllers.update_worker(oldNumber,newNumber, db)
-
 
 @router.post("/salary")
 def insert_salary(request : schemas.Salary, db : Session = Depends(get_db)):
     return userControllers.insert_salary(request, db)
 
 
-@router.get("/generate_salary_slip/{workerNumber}", response_class=FileResponse, name="Generate Salary Slip")
-def generate_salary_slip_endpoint(workerNumber : int, db: Session = Depends(get_db)):
+@router.get("/generate_salary_slip", response_class=FileResponse, name="Generate Salary Slip")
+def generate_salary_slip_endpoint(db: Session = Depends(get_db)):
 
-    salary_slip_generation.generate_salary_slip(workerNumber, db)
-    current_month = datetime.now().strftime("%B")
-    current_year = datetime.now().year
+    total_workers = db.query(models.Domestic_Worker).all()
 
-    worker = db.query(models.Domestic_Worker).filter(models.Domestic_Worker.workerNumber == workerNumber).first()
+    for singleworker in total_workers:
 
-    static_pdf_path = os.path.join(os.getcwd(), 'static', f"{worker.id}_SS_{current_month}_{current_year}.pdf")
+        salary_slip_generation.generate_salary_slip(singleworker.workerNumber, db)
+        print(f"salary slip generated successfully {singleworker.workerNumber}!!")
+        # current_month = datetime.now().strftime("%B")
+        # current_year = datetime.now().year
 
-    return FileResponse(static_pdf_path, media_type='application/pdf', filename=f"{workerNumber}_SS_{current_month}_{current_year}.pdf")
+        # worker = db.query(models.Domestic_Worker).filter(models.Domestic_Worker.workerNumber == workerNumber).first()
+
+        # static_pdf_path = os.path.join(os.getcwd(), 'static', f"{worker.id}_SS_{current_month}_{current_year}.pdf")
+
+        # return FileResponse(static_pdf_path, media_type='application/pdf', filename=f"{workerNumber}_SS_{current_month}_{current_year}.pdf")
 
 
 @router.post("/contract")

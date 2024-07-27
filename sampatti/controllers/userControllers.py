@@ -213,3 +213,14 @@ def extract_salary(salary_amount : str):
     
     return {"extracted_salary" : "INVALID"}
 
+
+def explain_worker(db : Session, workerNumber : int, employerNumber : int):
+
+    current_date = datetime.now().date()
+    new_worker = models.ExplainDomesticWorker(id = generate_unique_id(), date = current_date, employerNumber = employerNumber, workerNumber = workerNumber)
+
+    db.add(new_worker)
+    db.commit()
+    db.refresh(new_worker)
+
+    return {"message" : "Successful"}

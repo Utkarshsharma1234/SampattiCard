@@ -41,7 +41,7 @@ def upload_data_to_google_sheets():
         spreadsheet = client.create(sheet_title)
         sheet = spreadsheet.sheet1
 
-    team_emails = ['utkarsharma12311@gmail.com', 'nusrathmuskan962@gmail.com', 'vrashali@sampatticard.in']
+    team_emails = ['utkarsh@sampatticard.in', 'nusrathmuskan962@gmail.com', 'vrashali@sampatticard.in']
 
     # Share the entire spreadsheet with multiple team members
     for email in team_emails:

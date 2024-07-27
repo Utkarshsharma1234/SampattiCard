@@ -35,18 +35,15 @@ class Employer(Base):
 
 class TalkToAgentEmployer(Base):
     __tablename__ = "Talk_To_Agent"
-    id = Column(String, primary_key=True)
+    id = Column(String, primary_key=True)   
     date = Column(String)
     employerNumber = Column(Integer)
     category = Column(String)
 
 
-class Contract(Base) :
-
-    __tablename__ = "Contracts"
-    id = Column(Integer, primary_key=True, index=True)
-    employer_number = Column(Integer)
-    worker_number = Column(Integer)
-    message = Column(String)
-    timestamp = Column(String)
-    hashedMessage = Column(String)
+class ExplainDomesticWorker(Base):
+    __tablename__ = "ExplainDomesticWorker"
+    id = Column(String, primary_key=True)   
+    date = Column(String)
+    employerNumber = Column(Integer)
+    workerNumber = Column(Integer)

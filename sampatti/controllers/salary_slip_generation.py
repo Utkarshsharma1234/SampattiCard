@@ -60,10 +60,20 @@ def generate_salary_slip(workerNumber, db:Session) :
 
     c.setFont("Times-Roman", 10)
 
+    if worker.accountNumber is None:
+        worker.accountNumber = "NA"
+
+    if worker.upi_id is None:
+        worker.upi_id = "NA"
+
+    if worker.ifsc is None:
+        worker.ifsc = "NA"
+
+        
     worker_data = [
         [f"Name of the Employee : {worker.name}", "PF Number : NA"],
-        ["Nature of Work : Domestic Help", "Account Number : NA"],
-        ["Bank Name : NA", "IFSC Code : NA"],
+        ["Nature of Work : Domestic Help", f"Account Number : {worker.accountNumber}"],
+        ["Bank Name : NA", f"IFSC Code : {worker.ifsc}"],
         ["ESI Number : NA", f"UPI ID : {worker.upi_id}"]
     ]
 
@@ -94,6 +104,8 @@ def generate_salary_slip(workerNumber, db:Session) :
     ct = 1
     for transaction in total_transactions:
         order_id = transaction.order_id
+        if order_id is None:
+            continue
         status = check_order_status(order_id=order_id)
         if status == "PAID":
             single_row = [ct, transaction.employer_number, "UPI", transaction.order_id, transaction.salary_amount, 0]
