@@ -113,6 +113,6 @@ def contract_generation(request : schemas.Contract, db : Session = Depends(get_d
 def generate(workerNumber: int, employerNumber: int, db : Session = Depends(get_db)):
     return whatsapp_message.generate(workerNumber, employerNumber, db)
 
-@router.get('/generate_sheet')
+@router.get('/generate_talk_to_agent_sheet')
 def generate_sheet():
     return talk_to_agent_excel_file.upload_data_to_google_sheets()
