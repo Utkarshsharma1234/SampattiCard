@@ -1,6 +1,7 @@
 import os
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.responses import FileResponse
+import requests
 from .. import schemas, models
 from ..database import get_db
 from sqlalchemy.orm import Session
@@ -65,24 +66,36 @@ def update_worker(oldNumber : int, newNumber: int, db : Session = Depends(get_db
 def insert_salary(request : schemas.Salary, db : Session = Depends(get_db)):
     return userControllers.insert_salary(request, db)
 
-
-@router.get("/generate_salary_slip", response_class=FileResponse, name="Generate Salary Slip")
-def generate_salary_slip_endpoint(db: Session = Depends(get_db)):
+@router.get("/salary_slips")
+def salary_slips(db: Session = Depends(get_db)):
 
     total_workers = db.query(models.Domestic_Worker).all()
 
     for singleworker in total_workers:
+        url = f"https://conv.sampatticards.com/user/generate_salary_slip/{singleworker.workerNumber}" 
+        response = requests.get(url)
+        if response.status_code == 200:
 
-        salary_slip_generation.generate_salary_slip(singleworker.workerNumber, db)
-        print(f"salary slip generated successfully {singleworker.workerNumber}!!")
-        # current_month = datetime.now().strftime("%B")
-        # current_year = datetime.now().year
+            content_type = response.headers.get('Content-Type')
+            if content_type == 'application/pdf':
+                print("Request successful:", singleworker.workerNumber)
+        else:
+            print("Request failed:", response.status_code)
 
-        # worker = db.query(models.Domestic_Worker).filter(models.Domestic_Worker.workerNumber == workerNumber).first()
+    return {"message" : "SALARY SLIPS GENERATED"}
 
-        # static_pdf_path = os.path.join(os.getcwd(), 'static', f"{worker.id}_SS_{current_month}_{current_year}.pdf")
 
-        # return FileResponse(static_pdf_path, media_type='application/pdf', filename=f"{workerNumber}_SS_{current_month}_{current_year}.pdf")
+@router.get("/generate_salary_slip/{workerNumber}", response_class=FileResponse, name="Generate Salary Slip")
+def generate_salary_slip_endpoint(workerNumber : int, db: Session = Depends(get_db)):
+   
+    salary_slip_generation.generate_salary_slip(workerNumber, db)
+    current_month = datetime.now().strftime("%B")
+    current_year = datetime.now().year
+
+    worker = db.query(models.Domestic_Worker).filter(models.Domestic_Worker.workerNumber == workerNumber).first()
+    static_pdf_path = os.path.join(os.getcwd(), 'static', f"{worker.id}_SS_{current_month}_{current_year}.pdf")
+    
+    return FileResponse(static_pdf_path, media_type='application/pdf', filename=f"{workerNumber}_SS_{current_month}_{current_year}.pdf")
 
 
 @router.post("/contract")
