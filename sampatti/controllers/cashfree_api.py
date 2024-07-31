@@ -244,6 +244,7 @@ def payment_link_generation(db : Session):
 
     payment_ids = []
     total_workers = db.query(models.worker_employer).all()
+    total_domestic = db.query(models.Domestic_Worker).all()
     
     for item in total_workers:
         dummy_number = item.employer_number
@@ -260,7 +261,13 @@ def payment_link_generation(db : Session):
         response = dict(api_response.data)
         payment_session_id = response["payment_session_id"]
 
-        send_whatsapp_message(api_key=orai_api_key,namespace=orai_namespace,cust_name=item.employer_number,dw_name=item.worker_number, month_year= f"{current_month} {current_year}",session_id=payment_session_id,receiver_number=f"{dummy_number}")
+        worker_name = ""
+        for worker in total_domestic:
+            if worker.workerNumber == item.worker_number:
+                worker_name = worker.name
+                break
+
+        send_whatsapp_message(api_key=orai_api_key,namespace=orai_namespace,cust_name=item.employer_number,dw_name=worker_name, month_year= f"{current_month} {current_year}",session_id=payment_session_id,receiver_number=f"{dummy_number}")
 
         update_statement = update(models.worker_employer).where(models.worker_employer.c.worker_number == item.worker_number).where(models.worker_employer.c.employer_number == item.employer_number).values(order_id= response["order_id"])
 
