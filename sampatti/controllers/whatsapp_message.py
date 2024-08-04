@@ -57,7 +57,7 @@ def send_whatsapp_message(api_key, namespace, cust_name, dw_name, month_year, se
     response = requests.post(url, headers=headers, json=data)
 
     if response.status_code == 200:
-        print("Message sent successfully")
+        print(f"Message sent successfully, Worker name : {dw_name}, Employer name : {cust_name}")
     else:
         print(f"Failed to send message. Status code: {response.status_code}, Response: {response.text}")
 

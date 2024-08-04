@@ -108,7 +108,7 @@ def generate_salary_slip(workerNumber, db:Session) :
             continue
         status = check_order_status(order_id=order_id)
         if status == "PAID":
-            single_row = [ct, transaction.employer_number, "UPI", transaction.order_id, transaction.salary_amount, 0]
+            single_row = [ct, transaction.employer_id, "UPI", transaction.order_id, transaction.salary_amount, 0]
             receipt_data.append(single_row)
             rows += 1
             ct += 1
