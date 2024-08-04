@@ -101,6 +101,7 @@ def generate_salary_slip(workerNumber, db:Session) :
     rows = 0
 
     total_transactions = db.query(models.worker_employer).filter(models.worker_employer.c.worker_number == workerNumber).all()
+    total_employers = db.query(models.Employer).all()
     total_salary = 0
     
     ct = 1
@@ -110,7 +111,14 @@ def generate_salary_slip(workerNumber, db:Session) :
             continue
         status = check_order_status(order_id=order_id)
         if status == "PAID":
-            single_row = [ct, transaction.employer_id, "UPI", transaction.order_id, transaction.salary_amount, 0]
+
+            employer_id = ""
+            for employer in total_employers:
+                if(employer.employerNumber == transaction.employer_number):
+                    employer_id = employer.id
+                    break
+
+            single_row = [ct, employer_id, "UPI", transaction.order_id, transaction.salary_amount, 0]
             receipt_data.append(single_row)
             rows += 1
             ct += 1
