@@ -6,7 +6,7 @@ from reportlab.pdfgen import canvas
 from reportlab.platypus import Table, TableStyle
 from textwrap import wrap
 from sqlalchemy.orm import Session
-from datetime import datetime
+from datetime import datetime, timedelta
 from .. import models
 from .cashfree_api import check_order_status
 from ..controllers import amount_to_words
@@ -17,13 +17,15 @@ def generate_salary_slip(workerNumber, db:Session) :
     worker = db.query(models.Domestic_Worker).filter(models.Domestic_Worker.workerNumber == workerNumber).first()
     
     current_date = datetime.now().date()
-    current_month = datetime.now().strftime("%B")
+    first_day_of_current_month = datetime.now().replace(day=1)
+    last_day_of_previous_month = first_day_of_current_month - timedelta(days=1)
+    previous_month = last_day_of_previous_month.strftime("%B")
     current_year = datetime.now().year
     if not worker :
         raise HTTPException(status_code=404, detail="The domestic worker is not registered. You must register the worker first.")
     
     static_dir = os.path.join(os.getcwd(), 'static')
-    pdf_path = os.path.join(static_dir, f"{worker.id}_SS_{current_month}_{current_year}.pdf")
+    pdf_path = os.path.join(static_dir, f"{worker.id}_SS_{previous_month}_{current_year}.pdf")
 
     if not os.path.exists('static'):
         os.makedirs('static')
@@ -135,7 +137,7 @@ def generate_salary_slip(workerNumber, db:Session) :
     receipt_table.drawOn(c, x, y)
 
     c.setFont("Times-Roman", 10)
-    issued = f"Salary Slip issued on : {current_date} for the month of {current_month} {current_year}"
+    issued = f"Salary Slip issued on : {current_date} for the month of {previous_month} {current_year}"
     y -= 25
     c.drawString(x, y, text=issued)
 

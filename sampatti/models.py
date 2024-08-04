@@ -12,7 +12,7 @@ worker_employer = Table('worker_employer', Base.metadata,
     Column('vendor_id', String, default=''),
     Column('employer_id', String, ForeignKey('Employer.id')),
     Column('worker_name', String, ForeignKey('Domestic_Worker.name')),
-)
+)   
 
 
 class Domestic_Worker(Base):

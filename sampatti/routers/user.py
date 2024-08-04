@@ -89,13 +89,15 @@ def salary_slips(db: Session = Depends(get_db)):
 def generate_salary_slip_endpoint(workerNumber : int, db: Session = Depends(get_db)):
    
     salary_slip_generation.generate_salary_slip(workerNumber, db)
-    current_month = datetime.now().strftime("%B")
+    first_day_of_current_month = datetime.now().replace(day=1)
+    last_day_of_previous_month = first_day_of_current_month - timedelta(days=1)
+    previous_month = last_day_of_previous_month.strftime("%B")
     current_year = datetime.now().year
 
     worker = db.query(models.Domestic_Worker).filter(models.Domestic_Worker.workerNumber == workerNumber).first()
-    static_pdf_path = os.path.join(os.getcwd(), 'static', f"{worker.id}_SS_{current_month}_{current_year}.pdf")
+    static_pdf_path = os.path.join(os.getcwd(), 'static', f"{worker.id}_SS_{previous_month}_{current_year}.pdf")
     
-    return FileResponse(static_pdf_path, media_type='application/pdf', filename=f"{workerNumber}_SS_{current_month}_{current_year}.pdf")
+    return FileResponse(static_pdf_path, media_type='application/pdf', filename=f"{workerNumber}_SS_{previous_month}_{current_year}.pdf")
 
 
 @router.post("/contract")
