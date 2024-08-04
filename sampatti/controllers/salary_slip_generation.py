@@ -118,7 +118,7 @@ def generate_salary_slip(workerNumber, db:Session) :
                     employer_id = employer.id
                     break
 
-            single_row = [ct, employer_id, "UPI", transaction.order_id, transaction.salary_amount, 0]
+            single_row = [ct, f"EMP-{employer_id}", "UPI", transaction.order_id, transaction.salary_amount, 0]
             receipt_data.append(single_row)
             rows += 1
             ct += 1
