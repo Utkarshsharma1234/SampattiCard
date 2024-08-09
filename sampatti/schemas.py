@@ -14,8 +14,6 @@ class Domestic_Worker(BaseModel):
         from_attributes = True
 
 class Employer(BaseModel):
-    # name: str
-    # email : str
     employerNumber:int
     class Config:
         from_attributes = True

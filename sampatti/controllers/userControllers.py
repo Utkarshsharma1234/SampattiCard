@@ -131,12 +131,12 @@ def insert_salary(request : schemas.Salary, db : Session):
 
 
 
-def create_talk_to_agent_employer(employerNumber : int, category : str, db:Session):
+def create_talk_to_agent_employer(employerNumber : int, category : str, workerNumber : int, db:Session):
 
     current_date = datetime.now().date()
 
     unique_id = generate_unique_id()
-    new_user = models.TalkToAgentEmployer(id = unique_id, employerNumber = employerNumber, date=f"{current_date}", category = category)
+    new_user = models.TalkToAgentEmployer(id = unique_id, employerNumber = employerNumber, date=f"{current_date}", category = category, workerNumber=workerNumber)
     db.add(new_user)
     db.commit()
     db.refresh(new_user)

@@ -39,11 +39,4 @@ class TalkToAgentEmployer(Base):
     date = Column(String)
     employerNumber = Column(Integer)
     category = Column(String)
-
-
-class ExplainDomesticWorker(Base):
-    __tablename__ = "ExplainDomesticWorker"
-    id = Column(String, primary_key=True)   
-    date = Column(String)
-    employerNumber = Column(Integer)
-    workerNumber = Column(Integer)
+    workerNumber = Column(Integer, default=0)
