@@ -40,3 +40,12 @@ class TalkToAgentEmployer(Base):
     employerNumber = Column(Integer)
     category = Column(String)
     workerNumber = Column(Integer, default=0)
+
+class MessageLogSystem(Base):
+    __tablename__ = "Message_Log_System"
+    id = Column(String, primary_key=True)   
+    employerNumber = Column(Integer)
+    workerNumber = Column(Integer, default=0)
+    lastMessage = Column(String)
+    date = Column(String)
+    timestamp = Column(String)

@@ -25,6 +25,11 @@ class Salary(BaseModel):
     class Config:
         from_attributes = True
 
+class Message_log_Schema(BaseModel):
+    employerNumber : int
+    workerNumber : int
+    lastMessage : str
+
 class Dummy_worker(BaseModel):
     name: str
     email : str

@@ -108,12 +108,35 @@ def create_worker_account_number(request : schemas.Domestic_Worker, db: Session)
         return {"message" : "WORKER_ALREADY_ONBOARDED"}
     
 
-def update_worker(oldNumber : int, newNumber : int, db : Session):
+def create_message_log(request : schemas.Message_log_Schema, db  :Session):
 
-        update_statement = update(models.Domestic_Worker).where(models.Domestic_Worker.workerNumber == oldNumber).values(workerNumber=newNumber)
+    current_date = datetime.now().date()
+    current_time = datetime.now().timestamp()
+
+    existing_message = db.query(models.MessageLogSystem).where(models.MessageLogSystem.employerNumber==request.employerNumber).where(models.MessageLogSystem.workerNumber==request.workerNumber).first()
+
+    if not existing_message:
+
+        unique_id = generate_unique_id()
+        new_message = models.MessageLogSystem(id = unique_id, employerNumber = request.employerNumber, date=f"{current_date}", timestamp=f"{current_time}", lastMessage=request.lastMessage, workerNumber= request.workerNumber)
+        db.add(new_message)
+        db.commit()
+        db.refresh(new_message)
+        return new_message
+    
+    else:
+        update_statement = update(models.MessageLogSystem).where(models.MessageLogSystem.workerNumber == request.workerNumber).where(models.MessageLogSystem.employerNumber==request.employerNumber).values(lastMessage=request.lastMessage)
 
         db.execute(update_statement)
         db.commit()
+
+
+def update_worker(oldNumber : int, newNumber : int, db : Session):
+
+    update_statement = update(models.Domestic_Worker).where(models.Domestic_Worker.workerNumber == oldNumber).values(workerNumber=newNumber)
+
+    db.execute(update_statement)
+    db.commit()
 
 
 def insert_salary(request : schemas.Salary, db : Session):

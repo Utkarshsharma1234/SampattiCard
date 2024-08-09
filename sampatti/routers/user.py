@@ -58,6 +58,10 @@ def create_talk_to_agent_employer(employerNumber : int, category : str, workerNu
 def explain_worker(employerNumber : int, workerNumber : int , db : Session = Depends(get_db)):
     return userControllers.explain_worker(db, workerNumber, employerNumber)
 
+@router.post('/message_log/create')
+def create_message_log(request : schemas.Message_log_Schema, db : Session = Depends(get_db)):
+    return userControllers.create_message_log(request, db)
+
 @router.put('/domestic_worker/update')
 def update_worker(oldNumber : int, newNumber: int, db : Session = Depends(get_db)):
     return userControllers.update_worker(oldNumber,newNumber, db)
